@@ -62,9 +62,14 @@ const connect_axios = async (url, api, route, data) => {
                     message: `${api} Connection Timeout`
                 }
             } else {
-                Result = error
+                Result = {
+                    code: "099",
+                    status: "CONNECTION FAILED",
+                    message: error
+                }
             }
         });
+        console.log(Result);
         return Result
     } catch (error) {
         console.log(error);
