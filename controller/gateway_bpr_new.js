@@ -495,9 +495,7 @@ const inquiry_account = async (req, res) => {
                 no_rek,
                 gl_jns: "2"
             }
-            const { CORE_URL } = process.env
-
-            let hasil = await connect_axios(CORE_URL, 'inquiry', data_core)
+            let hasil = await connect_axios(url_core, 'CORE', 'inquiry', data_core)
             res.status(200).send(hasil)
         } else if (trx_code == "0300") {
             console.log("REQ SALDO GL");
