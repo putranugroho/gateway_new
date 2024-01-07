@@ -96,6 +96,7 @@ router.post('/stscore', validateApiKey, async (req, res) => {
     let header = {
         "api-key": API_KEY_CMS
     }
+
     printreq(req.body, "CEK STATUS CORE");
     response = await callAPI(URL_CMS, "gw/inq/stscore", req.body, header)
     printres(response, "CEK STATUS CORE");
