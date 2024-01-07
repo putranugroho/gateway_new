@@ -454,14 +454,14 @@ const inquiry_account = async (req, res) => {
     try {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
-        let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
-            {
-                replacements: [
-                    no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn
-                ],
-            }
-        );
+        // let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
+        //     `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
+        //     {
+        //         replacements: [
+        //             no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn
+        //         ],
+        //     }
+        // );
         if (trx_code == "0100") {
             console.log("REQ INQUIRY ACCOUNT");
             let data_cms = {bpr_id, no_hp, no_rek}
