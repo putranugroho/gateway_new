@@ -831,30 +831,30 @@ const transfer = async (req, res) => {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     let data_sbb = {bpr_id, tcode:trx_code}
                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
@@ -879,7 +879,7 @@ const transfer = async (req, res) => {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -946,7 +946,7 @@ const transfer = async (req, res) => {
                                             no_hp,
                                             bpr_id,
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             bank_tujuan,
                                             nama_bank_tujuan: "",
@@ -1001,7 +1001,7 @@ const transfer = async (req, res) => {
                                     } else {
                                         const detail_trans = {
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             no_hp,
                                             bank_tujuan,
@@ -1052,7 +1052,7 @@ const transfer = async (req, res) => {
                                 no_hp,
                                 bpr_id,
                                 no_rek,
-                                nama_rek: acct[0].nama_rek,
+                                nama_rek: request_acct.data.nama_rek,
                                 // nama_rek,
                                 bank_tujuan,
                                 nama_bank_tujuan: "",
@@ -1108,7 +1108,7 @@ const transfer = async (req, res) => {
                                 } else {
                                     const detail_trans = {
                                         no_rek,
-                                        nama_rek: acct[0].nama_rek,
+                                        nama_rek: request_acct.data.nama_rek,
                                         // nama_rek,
                                         no_hp,
                                         bank_tujuan,
@@ -1416,30 +1416,30 @@ const transfer = async (req, res) => {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     if (trx_type === "TRX") {
                         let data_status_core = {bpr_id}
                         let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
@@ -1464,7 +1464,7 @@ const transfer = async (req, res) => {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -1535,7 +1535,7 @@ const transfer = async (req, res) => {
                                             no_hp,
                                             bpr_id,
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             bank_tujuan,
                                             nama_bank_tujuan: "",
@@ -1621,7 +1621,7 @@ const transfer = async (req, res) => {
                                 no_hp,
                                 bpr_id,
                                 no_rek,
-                                nama_rek: acct[0].nama_rek,
+                                nama_rek: request_acct.data.nama_rek,
                                 // nama_rek,
                                 bank_tujuan,
                                 nama_bank_tujuan: "",
