@@ -62,9 +62,14 @@ const connect_axios = async (url, api, route, data) => {
                     message: `${api} Connection Timeout`
                 }
             } else {
-                Result = error
+                Result = {
+                    code: "099",
+                    status: "CONNECTION FAILED",
+                    message: error
+                }
             }
         });
+        console.log(Result);
         return Result
     } catch (error) {
         console.log(error);
@@ -454,18 +459,14 @@ const inquiry_account = async (req, res) => {
     try {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
-        if (pin == undefined) {
-            pin = ''
-            if (status == undefined) status = ''
-        }
-        let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
-            {
-                replacements: [
-                    no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn
-                ],
-            }
-        );
+        // let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
+        //     `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
+        //     {
+        //         replacements: [
+        //             no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn
+        //         ],
+        //     }
+        // );
         if (trx_code == "0100") {
             console.log("REQ INQUIRY ACCOUNT");
             let data_cms = {bpr_id, no_hp, no_rek}
@@ -487,6 +488,20 @@ const inquiry_account = async (req, res) => {
                 console.log(res_send);
                 res.status(200).send(res_send);
             }
+        } else if (trx_code == "0200") {
+            console.log("REQ ACTIVATE ACCOUNT");
+            const data_core = {
+                bpr_id,
+                trx_code,
+                trx_type: "TRX",
+                tgl_trans,
+                tgl_transmis: moment().format('YYMMDDHHmmss'),
+                rrn,
+                no_rek,
+                gl_jns: "2"
+            }
+            let hasil = await connect_axios(url_core, 'CORE', 'inquiry', data_core)
+            res.status(200).send(hasil)
         } else if (trx_code == "0300") {
             console.log("REQ SALDO GL");
             let data_cms = {bpr_id}
@@ -720,7 +735,6 @@ const inquiry_account = async (req, res) => {
                     console.log(res_send);
                     res.status(200).send(res_send);
                 } else if (request_acct.data.mpin == pin) {
-                    request_acct.data.id_nasabah = request.id_nasabah
                     let data_status_mpin = {status, mpin_salah:"0", no_rek, no_hp, bpr_id}
                     let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
                     console.log("update status mpin");
@@ -822,30 +836,30 @@ const transfer = async (req, res) => {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     let data_sbb = {bpr_id, tcode:trx_code}
                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
@@ -854,7 +868,7 @@ const transfer = async (req, res) => {
                     } else {
                         if (trx_type === "TRX") {
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 res_send = {
                                     code: "099",
@@ -870,7 +884,7 @@ const transfer = async (req, res) => {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -937,7 +951,7 @@ const transfer = async (req, res) => {
                                             no_hp,
                                             bpr_id,
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             bank_tujuan,
                                             nama_bank_tujuan: "",
@@ -992,7 +1006,7 @@ const transfer = async (req, res) => {
                                     } else {
                                         const detail_trans = {
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             no_hp,
                                             bank_tujuan,
@@ -1043,7 +1057,7 @@ const transfer = async (req, res) => {
                                 no_hp,
                                 bpr_id,
                                 no_rek,
-                                nama_rek: acct[0].nama_rek,
+                                nama_rek: request_acct.data.nama_rek,
                                 // nama_rek,
                                 bank_tujuan,
                                 nama_bank_tujuan: "",
@@ -1074,7 +1088,7 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 
                                 let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
@@ -1099,7 +1113,7 @@ const transfer = async (req, res) => {
                                 } else {
                                     const detail_trans = {
                                         no_rek,
-                                        nama_rek: acct[0].nama_rek,
+                                        nama_rek: request_acct.data.nama_rek,
                                         // nama_rek,
                                         no_hp,
                                         bank_tujuan,
@@ -1186,7 +1200,7 @@ const transfer = async (req, res) => {
         } else if (trx_code == "2200") {
             if (trx_type == "TRX") {
                 let data_status_core = {bpr_id}
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1293,7 +1307,7 @@ const transfer = async (req, res) => {
                 }
             } else if (trx_type == "REV") {
                 let data_status_core = {bpr_id}
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1407,33 +1421,33 @@ const transfer = async (req, res) => {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     if (trx_type === "TRX") {
                         let data_status_core = {bpr_id}
-                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                         if (status_core.data.status == "0") {
                             res_send = {
                                 code: "099",
@@ -1455,7 +1469,7 @@ const transfer = async (req, res) => {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -1526,7 +1540,7 @@ const transfer = async (req, res) => {
                                             no_hp,
                                             bpr_id,
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             bank_tujuan,
                                             nama_bank_tujuan: "",
@@ -1612,7 +1626,7 @@ const transfer = async (req, res) => {
                                 no_hp,
                                 bpr_id,
                                 no_rek,
-                                nama_rek: acct[0].nama_rek,
+                                nama_rek: request_acct.data.nama_rek,
                                 // nama_rek,
                                 bank_tujuan,
                                 nama_bank_tujuan: "",
@@ -1643,7 +1657,7 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 
                                 let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
@@ -1906,7 +1920,7 @@ const withdrawal = async (req, res) => {
                                             }
                                         }
                                         let data_status_core = {bpr_id}
-                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                                         if (status_core.data.status == "0") {
                                             res_send = {
                                                 code: "099",
@@ -2013,7 +2027,7 @@ const withdrawal = async (req, res) => {
                                     }
                                 }
                                 let data_status_core = {bpr_id}
-                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                                 if (status_core.data.status == "0") {
                                     let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
                                     let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
@@ -2141,7 +2155,7 @@ const withdrawal = async (req, res) => {
                 if (trx_type === "TRX") {
                     console.log("TARIK TUNAI ATM TRX");
                     let data_status_core = {bpr_id}
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                     if (status_core.data.status == "0") {
                         res_send = {
                             code: "099",
@@ -2401,7 +2415,7 @@ const withdrawal = async (req, res) => {
                         }
                     }
                     let data_status_core = {bpr_id}
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                     if (status_core.data.status == "0") {
                         
                         let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
