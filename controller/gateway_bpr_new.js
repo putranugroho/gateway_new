@@ -442,6 +442,12 @@ const inquiry_account = async (req, res) => {
     try {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
+        if (status == undefined && pin == undefined) {
+            status = ''
+            pin = ''
+        }
+        console.log(status);
+        console.log(pin);
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
             `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
             {
