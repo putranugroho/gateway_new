@@ -3,6 +3,11 @@ const app = express();
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const cors = require("cors");
+
+/** set router */
+const cmsrouter = require('./router/cms');
+const collmerouter = require('./router/collme');
+const transrouter = require('./router/transaksi');
 const gateway_bpr = require("./router/gateway_bpr");
 
 const { sequelize } = require("./connection");
@@ -24,6 +29,10 @@ app.use(bodyParser.text());
 app.use(bodyParser.raw());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/gateway_bpr", gateway_bpr);
+/** set path */
+app.use("/cms", cmsrouter);
+app.use("/collme", collmerouter);
+app.use("/trx", transrouter);
 
 app.get("/", (req, res) => {
   res.send("Gateway-api");

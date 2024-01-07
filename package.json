@@ -28,6 +28,10 @@
     "pg-promise": "^10.11.1",
     "sequelize": "^6.21.4",
     "sync-request": "^6.1.0",
-    "sync-sql": "^1.0.2"
+    "sync-sql": "^1.0.2",
+    "crypto": "^1.0.1",
+    "date-fns": "^3.1.0",
+    "fastest-validator": "^1.17.0",
+    "network-interfaces": "^1.1.0"
   }
 }
