@@ -716,7 +716,6 @@ const inquiry_account = async (req, res) => {
                     console.log(res_send);
                     res.status(200).send(res_send);
                 } else if (request_acct.data.mpin == pin) {
-                    request_acct.data.id_nasabah = request.id_nasabah
                     let data_status_mpin = {status, mpin_salah:"0", no_rek, no_hp, bpr_id}
                     let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
                     console.log("update status mpin");
