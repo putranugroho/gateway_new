@@ -868,7 +868,7 @@ const transfer = async (req, res) => {
                     } else {
                         if (trx_type === "TRX") {
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 res_send = {
                                     code: "099",
@@ -1088,7 +1088,7 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 
                                 let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
@@ -1200,7 +1200,7 @@ const transfer = async (req, res) => {
         } else if (trx_code == "2200") {
             if (trx_type == "TRX") {
                 let data_status_core = {bpr_id}
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1307,7 +1307,7 @@ const transfer = async (req, res) => {
                 }
             } else if (trx_type == "REV") {
                 let data_status_core = {bpr_id}
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1447,7 +1447,7 @@ const transfer = async (req, res) => {
                 } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     if (trx_type === "TRX") {
                         let data_status_core = {bpr_id}
-                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                         if (status_core.data.status == "0") {
                             res_send = {
                                 code: "099",
@@ -1657,7 +1657,7 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = {bpr_id}
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 
                                 let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
@@ -1920,7 +1920,7 @@ const withdrawal = async (req, res) => {
                                             }
                                         }
                                         let data_status_core = {bpr_id}
-                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                                         if (status_core.data.status == "0") {
                                             res_send = {
                                                 code: "099",
@@ -2027,7 +2027,7 @@ const withdrawal = async (req, res) => {
                                     }
                                 }
                                 let data_status_core = {bpr_id}
-                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                                 if (status_core.data.status == "0") {
                                     let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
                                     let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
@@ -2155,7 +2155,7 @@ const withdrawal = async (req, res) => {
                 if (trx_type === "TRX") {
                     console.log("TARIK TUNAI ATM TRX");
                     let data_status_core = {bpr_id}
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                     if (status_core.data.status == "0") {
                         res_send = {
                             code: "099",
@@ -2415,7 +2415,7 @@ const withdrawal = async (req, res) => {
                         }
                     }
                     let data_status_core = {bpr_id}
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
                     if (status_core.data.status == "0") {
                         
                         let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
