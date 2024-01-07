@@ -454,15 +454,11 @@ const inquiry_account = async (req, res) => {
     try {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
-        if (pin == undefined) {
-            pin = ''
-            if (status == undefined) status = ''
-        }
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
+            `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
             {
                 replacements: [
-                    no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn
+                    no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn
                 ],
             }
         );
