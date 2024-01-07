@@ -19,7 +19,7 @@ router.post('/glkdacct', validateApiKey, async (req, res) => {
 });
 
 
-router.post('/', validateApiKey, async (req, res) => {
+router.post('/gltranssbb', validateApiKey, async (req, res) => {
     let response = {}
     let header = {
         "api-key": API_KEY_CMS
