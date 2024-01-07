@@ -1515,102 +1515,22 @@ const transfer = async (req, res) => {
                                     }
                                     res.status(200).send(request);  
                                 } else {
-                                    const data = {
-                                        token,
-                                        account_number: rek_tujuan,
-                                        bank_code: bank_tujuan,
-                                        amount,
-                                        remark: "saldo keeping",
-                                        beneficiary_email: "nugrohopnn@gmail.com",
-                                        recipient_city: "391",
-                                        xusername,
-                                        xpassword
-                                    };
-                                    console.log("data request keeping");
-                                    console.log(data)
-                                    const request_keeping = await connect_keeping(
-                                        "https://core.metimes.id",
-                                        "/transfer-mtd",
-                                        data
-                                    );
-                                    console.log("hasil request keeping");
-                                    console.log(request_keeping);
-                                    if (request_keeping.message !== "Berhasil" && request_keeping.value !== "1") {
-                                        const data_core_reversal = {
-                                            no_hp,
-                                            bpr_id,
-                                            no_rek,
-                                            nama_rek: request_acct.data.nama_rek,
-                                            // nama_rek,
-                                            bank_tujuan,
-                                            nama_bank_tujuan: "",
-                                            rek_tujuan,
-                                            nama_tujuan,
-                                            amount,
-                                            trans_fee,
-                                            trx_code,
-                                            trx_type: "REV",
-                                            keterangan,
-                                            lokasi: "",
-                                            tgl_trans,
-                                            tgl_transmis: moment().format('YYMMDDHHmmss'),
-                                            rrn,
-                                            data: {
-                                                gl_rek_db_1: rek_tujuan,
-                                                gl_jns_db_1: "2",
-                                                gl_amount_db_1: amount,
-                                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                                gl_amount_db_2: trans_fee,
-                                                gl_rek_cr_1: no_rek,
-                                                gl_jns_cr_1: "2",
-                                                gl_amount_cr_1: amount,
-                                                gl_rek_cr_2: no_rek,
-                                                gl_jns_cr_2: "2",
-                                                gl_amount_cr_2: trans_fee,
-                                            }
-                                        }
-                                        const request_reversal_keeping = await connect_axios(url_core, 'CORE', "transfer", data_core_reversal)
-                                        if (request_reversal_keeping.code !== "000") {
-                                            console.log("failed gateway");
-                                            console.log(request_reversal_keeping);
-                                            request_reversal_keeping.data_keeping = {
-                                                value:0,
-                                                message:"Gagal reversal ke Core"
-                                            }
-                                            res.status(200).send(request_reversal_keeping);
-                                        } else {
-                                            //--berhasil dapat list product update atau insert ke db --//
-                                            console.log("Reversal Success");
-                                            res_send = {
-                                                code: "000",
-                                                status: "ok",
-                                                message: "Reversal Success",
-                                                data: request_reversal_keeping.data,
-                                                data_keeping: request_keeping,
-                                            }
-                                            console.log(res_send);
-                                            res.status(200).send(res_send);
-                                        }
-                                    } else {
 
-                                        let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
-                                        let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
-                                        console.log("Tambah Transfer Harian");
-                                        console.log(request_transfer_plus);
-                                        
-                                        //--berhasil dapat list product update atau insert ke db --//
-                                        console.log("Success");
-                                        res_send = {
-                                            code: "000",
-                                            status: "ok",
-                                            message: "Success",
-                                            data: request.data,
-                                            data_keeping: request_keeping,
-                                        }
-                                        console.log(res_send);
-                                        res.status(200).send(res_send);
+                                    let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                    let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
+                                    console.log("Tambah Transfer Harian");
+                                    console.log(request_transfer_plus);
+                                    
+                                    //--berhasil dapat list product update atau insert ke db --//
+                                    console.log("Success");
+                                    res_send = {
+                                        code: "000",
+                                        status: "ok",
+                                        message: "Success",
+                                        data: request.data,
                                     }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
                                 }
                             }
                         }
