@@ -657,8 +657,8 @@ const inquiry_account = async (req, res) => {
             }
         } else if (trx_code == "0800") {
             console.log("REQ VALIDATE NO_KTP");
-            let data_cms = {bpr_id, no_ktp}
-            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'trx/inquiry/cekktp', data_cms)
+            let data_inq = {bpr_id, no_hp, no_rek, no_ktp}
+            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatekeeping', data_inq)
             if (inquiry_ktp.code !== "000" && inquiry_ktp.data === null) {
                 console.log(inquiry_ktp);
                 res.status(200).send(inquiry_ktp);
