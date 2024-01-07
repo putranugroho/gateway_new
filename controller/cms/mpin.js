@@ -30,4 +30,16 @@ router.post('/updatempin', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/updatempincetak', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    printreq(req.body, "UPDATE STATUS MPIN");
+    response = await callAPI(URL_CMS, "gw/mpin/updatempincetak", req.body, header)
+    printres(response, "UPDATE STATUS MPIN");
+    res.status(200).send(response);
+});
+
 module.exports = router
