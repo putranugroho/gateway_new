@@ -33,7 +33,19 @@ const connect_axios = async (url, api, route, data) => {
         console.log(`${url}${route}`);
         console.log(`DATA API ${api} BANKING`);
         console.log(data);
+        let headers
+        if (api === 'CMS') {
+            headers = {
+                "Content-Type": "application/json",
+                "api-key": process.env.API_KEY
+            }
+        } else if (api === 'CORE') {
+            headers = {
+                "Content-Type": "application/json",
+            }
+        }
         await axios({
+            headers,
             method: 'post',
             url: `${url}${route.toLowerCase()}`,
             timeout: 25000, //milisecond
@@ -442,6 +454,10 @@ const inquiry_account = async (req, res) => {
     try {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
+        if (pin == undefined) {
+            pin = ''
+            if (status == undefined) status = ''
+        }
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
             `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, status, pin, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
             {
