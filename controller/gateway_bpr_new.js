@@ -483,6 +483,22 @@ const inquiry_account = async (req, res) => {
                 console.log(res_send);
                 res.status(200).send(res_send);
             }
+        } else if (trx_code == "0200") {
+            console.log("REQ ACTIVATE ACCOUNT");
+            const data_core = {
+                bpr_id,
+                trx_code,
+                trx_type: "TRX",
+                tgl_trans,
+                tgl_transmis: moment().format('YYMMDDHHmmss'),
+                rrn,
+                no_rek,
+                gl_jns: "2"
+            }
+            const { CORE_URL } = process.env
+
+            let hasil = await connect_axios(CORE_URL, 'inquiry', data_core)
+            res.status(200).send(hasil)
         } else if (trx_code == "0300") {
             console.log("REQ SALDO GL");
             let data_cms = {bpr_id}
