@@ -1701,7 +1701,7 @@ const withdrawal = async (req, res) => {
         console.log("REQ GATEWAY WITHDRAWAL");
         console.log(req.body);
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(no_hp, bpr_id, no_rek, nama_rek, amount, trans_fee, pin, trx_code, trx_type, keterangan, acq_id, terminal_id, token, lokasi, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
+            `INSERT INTO log_gateway(no_hp, bpr_id, no_rek, nama_rek, amount, trans_fee, pin, trx_code, trx_type, keterangan, acq_id, terminal_id, token, lokasi, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
             {
                 replacements: [
                     no_hp,
