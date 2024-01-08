@@ -97,7 +97,7 @@ async function transaksi_ppob(req) {
                                 no_hp: nohp,
                                 no_rek: norek,
                                 status: "1",
-                                mpin_salah: mpinsalah.tostring()
+                                mpin_salah: mpinsalah
                             }
                             responseApi = await callAPI(URL_CMS, "gw/mpin/updatests", dataAPIbody, header)
                             if (responseApi.code == "000") {
