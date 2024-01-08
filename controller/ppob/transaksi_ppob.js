@@ -35,7 +35,9 @@ async function transaksi_ppob(req) {
     let header = {
         "api-key": API_KEY_CMS
     }
-
+    amount = parseFloat(amount)
+    fee = parseFloat(fee)
+    fee_bpr = parseFloat(fee_bpr)
     let data = {
         bpr_id: bpr_id,
         no_hp: nohp,
@@ -135,7 +137,7 @@ async function transaksi_ppob(req) {
                             response = responseApi
                             return response
                         }
-                        if (amount > responseApi.data.ppob_trx) {
+                        if (amount > parseFloat(responseApi.data.ppob_trx)) {
                             response = {
                                 code: "009",
                                 status: "gagal",
@@ -143,7 +145,7 @@ async function transaksi_ppob(req) {
                             }
                             return response
                         }
-                        if (dataAPI.ppob + amount > responseApi.data.ppob_harian) {
+                        if (dataAPI.ppob + amount > parseFloat(responseApi.data.ppob_harian)) {
                             response = {
                                 code: "009",
                                 status: "gagal",
