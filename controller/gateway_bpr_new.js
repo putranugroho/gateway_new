@@ -410,6 +410,8 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
 }
 
 function split_sbb(data, tcode) {
+    console.log("data split sbb");
+    console.log(data);
     let no_pokok = {}
     let no_fee = {}
     let tagihan = {}
@@ -453,6 +455,11 @@ function split_sbb(data, tcode) {
                 fee_bpr = data[0]
             }
         }
+        console.log("return");
+        console.log(no_pokok, );
+        console.log(no_fee);
+        console.log(tagihan);
+        console.log(fee_bpr);
         return { no_pokok, no_fee, tagihan, fee_bpr }
     }
 }
