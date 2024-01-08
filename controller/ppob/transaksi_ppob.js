@@ -251,17 +251,19 @@ async function transaksi_ppob(req) {
                             }
                         }
                         response = await callAPI(url, "ppob", data_core, header)
-                        dataAPIbody = {
-                            bpr_id,
-                            amount,
-                            trans_fee: fee,
-                            no_rek: norek,
-                            no_hp: nohp
-                        }
-                        if (trx_type == "TRX") {
-                            callAPI(URL_CMS, "gw/update/ppobplus", dataAPIbody, header)
-                        } else if (trx_type == "REV") {
-                            callAPI(URL_CMS, "gw/update/ppobmin", dataAPIbody, header)
+                        if (response.code == "000") {
+                            dataAPIbody = {
+                                bpr_id,
+                                amount,
+                                trans_fee: fee,
+                                no_rek: norek,
+                                no_hp: nohp
+                            }
+                            if (trx_type == "TRX") {
+                                callAPI(URL_CMS, "gw/update/ppobplus", dataAPIbody, header)
+                            } else if (trx_type == "REV") {
+                                callAPI(URL_CMS, "gw/update/ppobmin", dataAPIbody, header)
+                            }
                         }
                     }
 
