@@ -90,7 +90,7 @@ async function transaksi_ppob(req) {
                             } else {
                                 response = responseApi
                             }
-                            return res.status(200).send(response)
+                            return response
                         } else {
                             dataAPIbody = {
                                 bpr_id: bpr_id,
@@ -109,7 +109,7 @@ async function transaksi_ppob(req) {
                             } else {
                                 response = responseApi
                             }
-                            return res.status(200).send(response)
+                            return response
                         }
                     } else {
                         dataAPIbody = {
@@ -122,7 +122,7 @@ async function transaksi_ppob(req) {
                         responseApi = await callAPI(URL_CMS, "gw/mpin/updatests", dataAPIbody, header)
                         if (responseApi.code !== "000") {
                             response = responseApi
-                            return res.status(200).send(response)
+                            return response
                         }
 
                         /**cek total transaksi melebihi lihit harian */
@@ -133,7 +133,7 @@ async function transaksi_ppob(req) {
                         responseApi = await callAPI(URL_CMS, "gw/inq/ceklimit", dataAPIbody, header)
                         if (responseApi.code !== "000") {
                             response = responseApi
-                            return res.status(200).send(response)
+                            return response
                         }
                         if (amount > responseApi.data.ppob_trx) {
                             response = {
@@ -141,7 +141,7 @@ async function transaksi_ppob(req) {
                                 status: "gagal",
                                 message: "transaksi gagal,melebihi limit pertransaksi"
                             }
-                            return res.status(200).send(response)
+                            return response
                         }
                         if (dataAPI.ppob + amount > responseApi.data.ppob_harian) {
                             response = {
@@ -149,7 +149,7 @@ async function transaksi_ppob(req) {
                                 status: "gagal",
                                 message: "transaksi gagal,melebihi limit harian"
                             }
-                            return res.status(200).send(response)
+                            return response
                         }
                         dataAPIbody = {
                             bpr_id: bpr_id,
@@ -162,7 +162,7 @@ async function transaksi_ppob(req) {
                                 status: "gagal",
                                 message: "trx code tidak terdaftar di gl trans"
                             }
-                            return res.status(200).send(response)
+                            return response
                         }
 
                         let nosbb = await split_sbb(responseApi.data, trx_code)
@@ -250,6 +250,7 @@ async function transaksi_ppob(req) {
                                 }
                             }
                         }
+                        console.log(data_core)
                         response = await callAPI(url, "ppob", data_core, header)
                         if (response.code == "000") {
                             dataAPIbody = {
