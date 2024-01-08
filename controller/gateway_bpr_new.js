@@ -410,6 +410,8 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
 }
 
 function split_sbb(data, tcode) {
+    // console.log("data split sbb");
+    // console.log(data);
     let no_pokok = {}
     let no_fee = {}
     let tagihan = {}
@@ -445,14 +447,19 @@ function split_sbb(data, tcode) {
         return { no_pokok, no_fee, tagihan }
     } else {
         for (let i = 0; i < data.length; i++) {
-            if (data[0].jns_gl == "0") {
-                no_pokok = data[0]
-            } else if (data[0].jns_gl == "1") {
-                no_fee = data[0]
-            } else if (data[0].jns_gl == "1") {
-                fee_bpr = data[0]
+            if (data[i].jns_gl == "0") {
+                no_pokok = data[i]
+            } else if (data[i].jns_gl == "1") {
+                no_fee = data[i]
+            } else if (data[i].jns_gl == "2") {
+                fee_bpr = data[i]
             }
         }
+        console.log("return");
+        console.log(no_pokok, );
+        console.log(no_fee);
+        console.log(tagihan);
+        console.log(fee_bpr);
         return { no_pokok, no_fee, tagihan, fee_bpr }
     }
 }
