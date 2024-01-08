@@ -1,10 +1,9 @@
 const express = require("express");
-const { 
+const {
     inquiry_account,
     transfer,
     withdrawal,
     ppob,
-    mpin,
     sign_in_off } = require("../controller/gateway_bpr_new");
 
 const router = express.Router();
@@ -14,6 +13,5 @@ router.post("/transfer", transfer);
 router.post("/withdrawal", withdrawal);
 router.post("/ppob", ppob);
 router.post("/sign_in_off", sign_in_off);
-router.post("/mpin", mpin);
 
 module.exports = router;

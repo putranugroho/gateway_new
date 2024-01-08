@@ -33,7 +33,19 @@ const connect_axios = async (url, api, route, data) => {
         console.log(`${url}${route}`);
         console.log(`DATA API ${api} BANKING`);
         console.log(data);
+        let headers
+        if (api === 'CMS') {
+            headers = {
+                "Content-Type": "application/json",
+                "api-key": process.env.API_KEY
+            }
+        } else if (api === 'CORE') {
+            headers = {
+                "Content-Type": "application/json",
+            }
+        }
         await axios({
+            headers,
             method: 'post',
             url: `${url}${route.toLowerCase()}`,
             timeout: 25000, //milisecond
@@ -50,9 +62,14 @@ const connect_axios = async (url, api, route, data) => {
                     message: `${api} Connection Timeout`
                 }
             } else {
-                Result = error
+                Result = {
+                    code: "099",
+                    status: "CONNECTION FAILED",
+                    message: error
+                }
             }
         });
+        console.log(Result);
         return Result
     } catch (error) {
         console.log(error);
@@ -60,7 +77,7 @@ const connect_axios = async (url, api, route, data) => {
     }
 }
 
-const connect_keeping = async (url, route, data, xusername, xpassword) => {
+const connect_keeping = async (url, route, data) => {
     try {
         let Result = ""
         console.log(`${url}${route}`);
@@ -69,8 +86,6 @@ const connect_keeping = async (url, route, data, xusername, xpassword) => {
         await axios({
             headers: {
                 "Content-Type": "application/json",
-                "x-username": xusername,
-                "x-password": xpassword
             },
             method: 'post',
             url: `${url}${route}`,
@@ -121,7 +136,7 @@ async function update_gl_oy_kredit(
     console.log(data_trans);
     if (trx_code !== "2300") {
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     no_rek_pokok,
@@ -143,7 +158,7 @@ async function update_gl_oy_kredit(
     }
     if (trans_fee !== 0) {
         let [res_log_fee, meta_log_fee] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     no_rek_fee,
@@ -184,7 +199,7 @@ async function update_gl_oy_debet(
     }
     if (trx_code == "2200") {
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,rcode,noreff) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,rcode,noreff) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     no_rek_pokok,
@@ -205,7 +220,7 @@ async function update_gl_oy_debet(
         )
     } else {
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     no_rek_pokok,
@@ -226,7 +241,7 @@ async function update_gl_oy_debet(
         );
         if (trans_fee !== 0) {
             let [res_log_fee, meta_log_fee] = await db.sequelize.query(
-                `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 {
                     replacements: [
                         no_rek_fee,
@@ -258,7 +273,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
     if (data_db.no_rek_pokok === "101208") {
         const nominal = data_db.amount + data_db.trans_fee
         let [res_log_pokok_db, meta_log_pokok_db] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     data_db.no_rek_pokok,
@@ -279,7 +294,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
         );
     } else {
         let [res_log_pokok_db, meta_log_pokok_db] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     data_db.no_rek_pokok,
@@ -300,7 +315,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
         );
         if (data_db.trans_fee !== 0) {
             let [res_log_fee_db, meta_log_fee_db] = await db.sequelize.query(
-                `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 {
                     replacements: [
                         data_db.no_rek_fee,
@@ -324,7 +339,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
     if (data_cr.no_rek_pokok === "101209") {
         const nominal = data_cr.amount + data_cr.trans_fee
         let [res_log_pokok_cr, meta_log_pokok_cr] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     data_cr.no_rek_pokok,
@@ -345,7 +360,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
         );
     } else {
         let [res_log_pokok_cr, meta_log_pokok_cr] = await db.sequelize.query(
-            `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     data_cr.no_rek_pokok,
@@ -366,7 +381,7 @@ async function update_gl_oy_db_cr(data_db, data_cr, detail_trans) {
         );
         if (data_cr.trans_fee !== 0) {
             let [res_log_fee_cr, meta_log_fee_cr] = await db.sequelize.query(
-                `INSERT INTO log_gateway(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                `INSERT INTO log_core(nosbb,bpr_id,trx_code,trx_type,tgl_trans,ket_trans,data_trans,amount_db,amount_cr,rrn,status,noreff,rcode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                 {
                     replacements: [
                         data_cr.no_rek_fee,
@@ -445,45 +460,50 @@ const inquiry_account = async (req, res) => {
         console.log("REQ INQ ACC GW");
         console.log(req.body);
         // let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-        //     `INSERT INTO log_core(no_hp,bpr_id,no_rek,trx_code,trx_type,tgl_trans,tgl_transmis,rrn,messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
+        //     `INSERT INTO log_gateway(no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,'REQUEST')`,
         //     {
         //         replacements: [
-        //             no_rek, no_hp, bpr_id, trx_code, trx_type, tgl_trans, tgl_transmis, rrn
+        //             no_ktp, no_hp, no_rek, bpr_id, trx_code, trx_type, tgl_trans, rrn
         //         ],
         //     }
-        // );inquiry_account
+        // );
         if (trx_code == "0100") {
+            console.log("REQ INQUIRY ACCOUNT");
             let data_cms = {bpr_id, no_hp, no_rek}
             let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
-                if (request_acct.data.status != "0" && request_acct.data.status == "4") {
-                    res.status(200).send({
-                        code: "003",
-                        status: "Failed",
-                        message: "Gagal, Akun Sudah diaktivasi",
-                        rrn: rrn,
-                        data: null,
-                    });
-                } else {
-                    request_acct.data["tgl_trans"] = tgl_trans
-                    request_acct.data["tgl_transmis"] = moment().format('YYMMDDHHmmss')
-                    request_acct.data["rrn"] = rrn
-                    let res_send = {
-                        code: "000",
-                        status: "ok",
-                        message: "Success",
-                        rrn: rrn,
-                        data: request_acct.data,
-                    }
-                    console.log(res_send);
-                    res.status(200).send(res_send);
+                request_acct.data["tgl_trans"] = tgl_trans
+                request_acct.data["tgl_transmis"] = moment().format('YYMMDDHHmmss')
+                request_acct.data["rrn"] = rrn
+                let res_send = {
+                    code: "000",
+                    status: "ok",
+                    message: "Success",
+                    rrn: rrn,
+                    data: request_acct.data,
                 }
+                console.log(res_send);
+                res.status(200).send(res_send);
             }
+        } else if (trx_code == "0200") {
+            console.log("REQ ACTIVATE ACCOUNT");
+            const data_core = {
+                bpr_id,
+                trx_code,
+                trx_type: "TRX",
+                tgl_trans,
+                tgl_transmis: moment().format('YYMMDDHHmmss'),
+                rrn,
+                no_rek,
+                gl_jns: "2"
+            }
+            let hasil = await connect_axios(url_core, 'CORE', 'inquiry', data_core)
+            res.status(200).send(hasil)
         } else if (trx_code == "0300") {
-            console.log("REQ SALDO");
+            console.log("REQ SALDO GL");
             let data_cms = {bpr_id}
             let request_gl = await connect_axios(url_cms, 'CMS', 'trx/gl/glkdacct', data_cms)
             if (request_gl.code !== "000" && request_gl.data === null) {
@@ -668,8 +688,8 @@ const inquiry_account = async (req, res) => {
             }
         } else if (trx_code == "0800") {
             console.log("REQ VALIDATE NO_KTP");
-            let data_cms = {bpr_id, no_ktp}
-            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'trx/inquiry/cekktp', data_cms)
+            let data_inq = {bpr_id, no_hp, no_rek, no_ktp}
+            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatekeeping', data_inq)
             if (inquiry_ktp.code !== "000" && inquiry_ktp.data === null) {
                 console.log(inquiry_ktp);
                 res.status(200).send(inquiry_ktp);
@@ -715,52 +735,22 @@ const inquiry_account = async (req, res) => {
                     console.log(res_send);
                     res.status(200).send(res_send);
                 } else if (request_acct.data.mpin == pin) {
-                    const data = {
-                        token: "715f8ab555438f985b579844ea998866",
-                        nama_lengkap: request_acct.data.nama,
-                        nomor_ponsel: request_acct.data.no_hp,
-                        email: "nugrohopnn@gmail.com",
-                        tgl_lahir: "1989-07-22",
-                        jk: "L",
-                        username: user_id,
-                        password,
-                    };
-                    console.log("data keeping");
-                    console.log(data);
-                    const request = await connect_keeping(
-                        "https://api.keeping.digital",
-                        "/registrasi-nasabah",
-                        data,
-                        xusername,
-                        xpassword
-                    );
-                    if (request.message != "Berhasil") {
-                        console.log("failed gateway");
-                        console.log(request);
-                        res.status(200).send(request);
-                    } else {
-                        console.log(request);
-                        request_acct.data.id_nasabah = request.id_nasabah
-                        let data_status_mpin = {status, mpin_salah:"0", no_rek, no_hp, bpr_id}
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
-                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
-                            console.log(update_status_mpin);
-                            res.status(200).send(update_status_mpin);
-                        } else {
-                            res_send = {
-                                code: "000",
-                                status: "ok",
-                                message: "Success",
-                                rrn: rrn,
-                                data: request_acct.data,
-                            }
-                            console.log(res_send);
-                            res.status(200).send(res_send);
-                        }
+                    let data_status_mpin = {status, mpin_salah:"0", no_rek, no_hp, bpr_id}
+                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                    console.log("update status mpin");
+                    console.log(update_status_mpin);
+                    res_send = {
+                        code: "000",
+                        status: "ok",
+                        message: "Success",
+                        rrn: rrn,
+                        data: request_acct.data,
                     }
+                    console.log(res_send);
+                    res.status(200).send(res_send);
                 } else {
                     mpin_salah = mpin_salah + 1
-                    if (mpin_salah == 3) {
+                    if (mpin_salah >= 3) {
                         let data_status_mpin = {status:"2", mpin_salah, no_rek, no_hp, bpr_id}
                         let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
@@ -823,6 +813,7 @@ const transfer = async (req, res) => {
         trans_fee,
         xusername,
         xpassword,
+        token,
         trx_code,
         trx_type,
         keterangan,
@@ -831,90 +822,69 @@ const transfer = async (req, res) => {
         rrn } = req.body;
     try {
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_core(no_hp,bpr_id,no_rek,bank_tujuan,rek_tujuan,nama_tujuan,amount,trans_fee,trx_code,trx_type,tgl_trans,tgl_transmis,rrn) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_gateway(no_hp,bpr_id,no_rek,bank_tujuan,rek_tujuan,nama_tujuan,amount,trans_fee,trx_code,trx_type,tgl_trans,keterangan,rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
             {
                 replacements: [
-                    no_hp, bpr_id, no_rek, bank_tujuan, rek_tujuan, nama_tujuan, amount, trans_fee, trx_code, trx_type, tgl_trans, moment().format('YYMMDDHHmmss'), rrn,
+                    no_hp, bpr_id, no_rek, bank_tujuan, rek_tujuan, nama_tujuan, amount, trans_fee, trx_code, trx_type, tgl_trans, keterangan, rrn,
                 ],
             }
         );
         if (trx_code == "2100") {
-            let acct = await db.sequelize.query(
-                `SELECT * FROM cms_acct_ebpr WHERE bpr_id = ? AND no_hp = ? AND no_rek = ? AND status != '6'`,
-                {
-                    replacements: [bpr_id, no_hp, no_rek],
-                    type: db.sequelize.QueryTypes.SELECT,
-                }
-            )
-            if (!acct.length) {
-                res.status(200).send({
-                    code: "003",
-                    status: "Failed",
-                    message: "Gagal, Akun Belum Terdaftar",
-                    data: null,
-                });
+            let data_cms = {bpr_id, no_hp, no_rek}
+            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_cms)
+            if (request_acct.code !== "000" && request_acct.data === null) {
+                console.log(request_acct);
+                res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
-                    let get_nosbb = await db.sequelize.query(
-                        `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                        {
-                            replacements: [trx_code, bpr_id],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    );
-                    if (!get_nosbb.length) {
-                        res.status(200).send({
-                            code: "004",
-                            status: "Failed",
-                            message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                            data: null,
-                        });
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
+                    let data_sbb = {bpr_id, tcode:trx_code}
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
+                        res.status(200).send(get_nosbb);
                     } else {
                         if (trx_type === "TRX") {
-                            let status_core = await db.sequelize.query(
-                                `SELECT * FROM status_core WHERE bpr_id = ?`,
-                                {
-                                    replacements: [bpr_id],
-                                    type: db.sequelize.QueryTypes.SELECT,
-                                }
-                            );
-                            if (status_core[0].status == "0") {
-                                res.status(200).send({
+                            let data_status_core = {bpr_id}
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            if (status_core.data.status == "0") {
+                                res_send = {
                                     code: "099",
                                     status: "Failed",
                                     message: "Gagal, Core SIGN OFF!!!",
                                     data: null,
-                                });
+                                }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
                             } else {
-                                let nosbb = await split_sbb(get_nosbb, trx_code)
+                                let nosbb = await split_sbb(get_nosbb.data, trx_code)
                                 const data_core = {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -946,7 +916,7 @@ const transfer = async (req, res) => {
                                 }
                                 const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                                 let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                    `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                     {
                                         replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                     }
@@ -957,22 +927,22 @@ const transfer = async (req, res) => {
                                     res.status(200).send(request);
                                 } else {
                                     const data = {
-                                        token: "715f8ab555438f985b579844ea998866",
+                                        token,
                                         account_number: rek_tujuan,
                                         bank_code: bank_tujuan,
                                         amount,
                                         remark: "saldo keeping",
                                         beneficiary_email: "nugrohopnn@gmail.com",
                                         recipient_city: "391",
+                                        xusername,
+                                        xpassword
                                     };
                                     console.log("data request keeping");
                                     console.log(data);
                                     const request_keeping = await connect_keeping(
                                         "https://core.metimes.id",
                                         "/transfer-mtd",
-                                        data,
-                                        xusername,
-                                        xpassword
+                                        data
                                     );
                                     console.log("hasil request keeping");
                                     console.log(request_keeping);
@@ -981,7 +951,7 @@ const transfer = async (req, res) => {
                                             no_hp,
                                             bpr_id,
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             bank_tujuan,
                                             nama_bank_tujuan: "",
@@ -1015,29 +985,28 @@ const transfer = async (req, res) => {
                                         if (request_reversal_keeping.code !== "000") {
                                             console.log("failed reversal keeping");
                                             console.log(request_reversal_keeping);
+                                            request_reversal_keeping.data_keeping = {
+                                                value:0,
+                                                message:"Gagal reversal ke Core"
+                                            }
                                             res.status(200).send(request_reversal_keeping);
                                         } else {
                                             //--berhasil dapat list product update atau insert ke db --//
                                             console.log("Reversal Success");
-                                            console.log({
+                                            res_send = {
                                                 code: "000",
                                                 status: "ok",
                                                 message: "Reversal Success",
                                                 data: request_reversal_keeping.data,
                                                 data_keeping: request_keeping,
-                                            });
-                                            res.status(200).send({
-                                                code: "000",
-                                                status: "ok",
-                                                message: "Reversal Success",
-                                                data: request_reversal_keeping.data,
-                                                data_keeping: request_keeping,
-                                            });
+                                            }
+                                            console.log(res_send);
+                                            res.status(200).send(res_send);
                                         }
                                     } else {
                                         const detail_trans = {
                                             no_rek,
-                                            nama_rek: acct[0].nama_rek,
+                                            nama_rek: request_acct.data.nama_rek,
                                             // nama_rek,
                                             no_hp,
                                             bank_tujuan,
@@ -1062,60 +1031,33 @@ const transfer = async (req, res) => {
                                             nosbb.no_fee.nmsbb_cr,
                                             detail_trans
                                         )
-                                        let [results, metadata] = await db.sequelize.query(
-                                            `UPDATE cms_acct_ebpr SET transfer = transfer + ? + ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                            {
-                                                replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                            }
-                                        );
-                                        if (!metadata) {
-                                            console.log({
-                                                code: "001",
-                                                status: "Failed",
-                                                message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                data: null,
-                                            });
-                                            res.status(200).send({
-                                                code: "001",
-                                                status: "Failed",
-                                                message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                data: null,
-                                            });
-                                        } else {
-                                            //--berhasil dapat list product update atau insert ke db --//
-                                            console.log("Success");
-                                            console.log({
-                                                code: "000",
-                                                status: "ok",
-                                                message: "Success",
-                                                data: request.data,
-                                                data_keeping: request_keeping,
-                                            });
-                                            res.status(200).send({
-                                                code: "000",
-                                                status: "ok",
-                                                message: "Success",
-                                                data: request.data,
-                                                data_keeping: request_keeping,
-                                            });
+
+                                        let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                        let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
+                                        console.log("Tambah Transfer Harian");
+                                        console.log(request_transfer_plus);
+                                        
+                                        request.data['keterangan'] = keterangan
+                                        console.log("Success");
+                                        res_send = {
+                                            code: "000",
+                                            status: "ok",
+                                            message: "Success",
+                                            data: request.data,
+                                            data_keeping: request_keeping,
                                         }
+                                        console.log(res_send);
+                                        res.status(200).send(res_send);
                                     }
                                 }
                             }
                         } else if (trx_type === "REV") {
-                            let status_core = await db.sequelize.query(
-                                `SELECT * FROM status_core WHERE bpr_id = ?`,
-                                {
-                                    replacements: [bpr_id],
-                                    type: db.sequelize.QueryTypes.SELECT,
-                                }
-                            );
-                            let nosbb = await split_sbb(get_nosbb, trx_code)
+                            let nosbb = await split_sbb(get_nosbb.data, trx_code)
                             const data_core = {
                                 no_hp,
                                 bpr_id,
                                 no_rek,
-                                nama_rek: acct[0].nama_rek,
+                                nama_rek: request_acct.data.nama_rek,
                                 // nama_rek,
                                 bank_tujuan,
                                 nama_bank_tujuan: "",
@@ -1145,23 +1087,23 @@ const transfer = async (req, res) => {
                                     gl_amount_cr_2: trans_fee,
                                 }
                             }
-                            if (status_core[0].status == "0") {
-                                let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-                                    `INSERT INTO hold_transaction (data) VALUES (?)`,
-                                    {
-                                        replacements: [
-                                            JSON.stringify(data_core),
-                                        ],
-                                    }
-                                );
-                                req.body["nama"] = acct[0].nama_rek
-                                console.log("Success");
-                                res.status(200).send({
-                                    code: "000",
-                                    status: "ok",
-                                    message: "Success",
-                                    data: req.body,
-                                });
+                            let data_status_core = {bpr_id}
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            if (status_core.data.status == "0") {
+                                
+                                let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
+                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                console.log("hold transaction");
+                                console.log(hold_transaction);
+        
+                                res_send = {
+                                    code: "099",
+                                    status: "Failed",
+                                    message: "Gagal, Core SIGN OFF!!!",
+                                    data: null,
+                                }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
                             } else {
                                 const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                                 if (request.code !== "000") {
@@ -1171,7 +1113,7 @@ const transfer = async (req, res) => {
                                 } else {
                                     const detail_trans = {
                                         no_rek,
-                                        nama_rek: acct[0].nama_rek,
+                                        nama_rek: request_acct.data.nama_rek,
                                         // nama_rek,
                                         no_hp,
                                         bank_tujuan,
@@ -1196,35 +1138,22 @@ const transfer = async (req, res) => {
                                         nosbb.no_fee.nmsbb_cr,
                                         detail_trans
                                     )
-                                    let [results, metadata] = await db.sequelize.query(
-                                        `UPDATE cms_acct_ebpr SET transfer = transfer - ? - ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                        {
-                                            replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                        }
-                                    );
-                                    if (!metadata) {
-                                        console.log({
-                                            code: "001",
-                                            status: "Failed",
-                                            message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                            data: null,
-                                        });
-                                        res.status(200).send({
-                                            code: "001",
-                                            status: "Failed",
-                                            message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                            data: null,
-                                        });
-                                    } else {
-                                        //--berhasil dapat list product update atau insert ke db --//
-                                        console.log("Success");
-                                        res.status(200).send({
-                                            code: "000",
-                                            status: "ok",
-                                            message: "Success",
-                                            data: request.data,
-                                        });
+
+                                    let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'trx/update/trfmin', data_transfer)
+                                    console.log("Kurang Transfer Harian");
+                                    console.log(request_transfer_min);
+                                    
+                                    request.data['keterangan'] = keterangan
+                                    console.log("Success");
+                                    res_send = {
+                                        code: "000",
+                                        status: "ok",
+                                        message: "Success",
+                                        data: request.data
                                     }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
                                 }
                             }
                         }
@@ -1232,69 +1161,63 @@ const transfer = async (req, res) => {
                 } else {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ?, status = '2'  WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:"2", mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "007",
+                                status: "Failed",
+                                message: "Gagal, mPIN Terblokir!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "007",
-                            status: "Failed",
-                            message: "Gagal, mPIN Terblokir!!!",
-                            data: null,
-                        });
+                            console.log("mpin akan terblokir");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     } else {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ? WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "003",
+                                status: "Failed",
+                                message: "Gagal, Pin Anda Salah!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "003",
-                            status: "Failed",
-                            message: "Gagal, Pin Anda Salah!!!",
-                            data: null,
-                        });
+                            console.log("mpin salah, counter mpin bertambah");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     }
                 }
             }
         } else if (trx_code == "2200") {
             if (trx_type == "TRX") {
-                let status_core = await db.sequelize.query(
-                    `SELECT * FROM status_core WHERE bpr_id = ?`,
-                    {
-                        replacements: [bpr_id],
-                        type: db.sequelize.QueryTypes.SELECT,
-                    }
-                );
-                if (status_core[0].status == "0") {
-                    res.status(200).send({
+                let data_status_core = {bpr_id}
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                if (status_core.data.status == "0") {
+                    res_send = {
                         code: "099",
                         status: "Failed",
                         message: "Gagal, Core SIGN OFF!!!",
                         data: null,
-                    });
+                    }
+                    console.log(res_send);
+                    res.status(200).send(res_send);
                 } else {
-                    let get_nosbb = await db.sequelize.query(
-                        `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                        {
-                            replacements: [trx_code, bank_tujuan],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    )
-                    if (!get_nosbb.length) {
-                        res.status(200).send({
-                            code: "004",
-                            status: "Failed",
-                            message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                            data: null,
-                        });
+                    let data_sbb = {bpr_id:bank_tujuan, tcode:trx_code}
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
+                        res.status(200).send(get_nosbb);
                     } else {
-                        let nosbb = await split_sbb(get_nosbb, trx_code)
-                        console.log("nosbb");
-                        console.log(nosbb);
+                        let nosbb = await split_sbb(get_nosbb.data, trx_code)
                         const data_core = {
                             no_hp,
                             bpr_id,
@@ -1331,7 +1254,7 @@ const transfer = async (req, res) => {
                         }
                         const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                         let [results, metadata] = await db.sequelize.query(
-                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                            `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                             {
                                 replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                             }
@@ -1370,49 +1293,38 @@ const transfer = async (req, res) => {
                             )
                             //--berhasil dapat list product update atau insert ke db --//
                             console.log("Success");
-                            console.log(request.data);
-                            res.status(200).send({
+                            res_send = {
                                 code: "000",
                                 status: "ok",
                                 message: "Success",
                                 data: request.data,
-                            });
+                            }
+                            console.log(res_send);
+                            res.status(200).send(res_send);
                             // }
                         }
                     }
                 }
             } else if (trx_type == "REV") {
-                let status_core = await db.sequelize.query(
-                    `SELECT * FROM status_core WHERE bpr_id = ?`,
-                    {
-                        replacements: [bpr_id],
-                        type: db.sequelize.QueryTypes.SELECT,
-                    }
-                );
-                if (status_core[0].status == "0") {
-                    res.status(200).send({
+                let data_status_core = {bpr_id}
+                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                if (status_core.data.status == "0") {
+                    res_send = {
                         code: "099",
                         status: "Failed",
                         message: "Gagal, Core SIGN OFF!!!",
                         data: null,
-                    });
+                    }
+                    console.log(res_send);
+                    res.status(200).send(res_send);
                 } else {
-                    let get_nosbb = await db.sequelize.query(
-                        `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                        {
-                            replacements: [trx_code, bank_tujuan],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    )
-                    if (!get_nosbb.length) {
-                        res.status(200).send({
-                            code: "004",
-                            status: "Failed",
-                            message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                            data: null,
-                        });
+                    let data_sbb = {bpr_id, tcode:trx_code}
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
+                        res.status(200).send(get_nosbb);
                     } else {
-                        let nosbb = await split_sbb(get_nosbb, trx_code)
+                        let nosbb = await split_sbb(get_nosbb.data, trx_code)
                         const data_core = {
                             no_hp,
                             bpr_id,
@@ -1449,7 +1361,7 @@ const transfer = async (req, res) => {
                         }
                         const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                         let [results, metadata] = await db.sequelize.query(
-                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                            `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                             {
                                 replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                             }
@@ -1489,95 +1401,75 @@ const transfer = async (req, res) => {
                             )
                             //--berhasil dapat list product update atau insert ke db --//
                             console.log("Success");
-                            console.log(request.data);
-                            res.status(200).send({
+                            res_send = {
                                 code: "000",
                                 status: "ok",
                                 message: "Success",
                                 data: request.data,
-                            });
+                            }
+                            console.log(res_send);
+                            res.status(200).send(res_send);
                             // }
                         }
                     }
                 }
             }
         } else if (trx_code == "2300") {
-            let acct = await db.sequelize.query(
-                `SELECT * FROM cms_acct_ebpr WHERE bpr_id = ? AND no_hp = ? AND no_rek = ? AND status != '6'`,
-                {
-                    replacements: [bpr_id, no_hp, no_rek],
-                    type: db.sequelize.QueryTypes.SELECT,
-                }
-            )
-            if (!acct.length) {
-                res.status(200).send({
-                    code: "003",
-                    status: "Failed",
-                    message: "Gagal, Akun Belum Terdaftar",
-                    data: null,
-                });
+            let data_acct = {bpr_id, no_hp, no_rek}
+            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_acct)
+            if (request_acct.code !== "000" && request_acct.data === null) {
+                console.log(request_acct);
+                res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(acct[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (acct[0].status != 2 && acct[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && acct[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && acct[0].status == 2) {
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
                     });
-                } else if ((acct[0].mpin == pin || trx_type === "REV") && acct[0].status == 1) {
-                    let status_core = await db.sequelize.query(
-                        `SELECT * FROM status_core WHERE bpr_id = ?`,
-                        {
-                            replacements: [bpr_id],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    );
-                    if (status_core[0].status == "0") {
-                        res.status(200).send({
-                            code: "099",
-                            status: "Failed",
-                            message: "Gagal, Core SIGN OFF!!!",
-                            data: null,
-                        });
-                    } else {
-                        if (trx_type === "TRX") {
-                            let get_nosbb = await db.sequelize.query(
-                                `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                                {
-                                    replacements: [trx_code, bpr_id],
-                                    type: db.sequelize.QueryTypes.SELECT,
-                                }
-                            )
-                            if (!get_nosbb.length) {
-                                res.status(200).send({
-                                    code: "004",
-                                    status: "Failed",
-                                    message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                                    data: null,
-                                });
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
+                    if (trx_type === "TRX") {
+                        let data_status_core = {bpr_id}
+                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                        if (status_core.data.status == "0") {
+                            res_send = {
+                                code: "099",
+                                status: "Failed",
+                                message: "Gagal, Core SIGN OFF!!!",
+                                data: null,
+                            }
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        } else {
+                            let data_sbb = {bpr_id:bank_tujuan, tcode:trx_code}
+                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                            if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                console.log(get_nosbb);
+                                res.status(200).send(get_nosbb);
                             } else {
-                                let nosbb = await split_sbb(get_nosbb, trx_code)
+                                let nosbb = await split_sbb(get_nosbb.data, trx_code)
                                 const data_core = {
                                     no_hp,
                                     bpr_id,
                                     no_rek,
-                                    nama_rek: acct[0].nama_rek,
+                                    nama_rek: request_acct.data.nama_rek,
                                     // nama_rek,
                                     bank_tujuan,
                                     nama_bank_tujuan: "",
@@ -1609,7 +1501,7 @@ const transfer = async (req, res) => {
                                 }
                                 const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                                 let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                    `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                     {
                                         replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                     }
@@ -1623,162 +1515,88 @@ const transfer = async (req, res) => {
                                     }
                                     res.status(200).send(request);  
                                 } else {
-                                    const data = {
-                                        token: "715f8ab555438f985b579844ea998866",
-                                        account_number: rek_tujuan,
-                                        bank_code: bank_tujuan,
-                                        amount,
-                                        remark: "saldo keeping",
-                                        beneficiary_email: "nugrohopnn@gmail.com",
-                                        recipient_city: "391",
-                                    };
-                                    console.log("data request keeping");
-                                    console.log(data)
-                                    const request_keeping = await connect_keeping(
-                                        "https://core.metimes.id",
-                                        "/transfer-mtd",
-                                        data,
-                                        xusername,
-                                        xpassword
-                                    );
-                                    console.log("hasil request keeping");
-                                    console.log(request_keeping);
-                                    if (request_keeping.message !== "Berhasil" && request_keeping.value !== "1") {
-                                        const data_core_reversal = {
-                                            no_hp,
-                                            bpr_id,
-                                            no_rek,
-                                            nama_rek: acct[0].nama_rek,
-                                            // nama_rek,
-                                            bank_tujuan,
-                                            nama_bank_tujuan: "",
-                                            rek_tujuan,
-                                            nama_tujuan,
-                                            amount,
-                                            trans_fee,
-                                            trx_code,
-                                            trx_type: "REV",
-                                            keterangan,
-                                            lokasi: "",
-                                            tgl_trans,
-                                            tgl_transmis: moment().format('YYMMDDHHmmss'),
-                                            rrn,
-                                            data: {
-                                                gl_rek_db_1: rek_tujuan,
-                                                gl_jns_db_1: "2",
-                                                gl_amount_db_1: amount,
-                                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                                gl_amount_db_2: trans_fee,
-                                                gl_rek_cr_1: no_rek,
-                                                gl_jns_cr_1: "2",
-                                                gl_amount_cr_1: amount,
-                                                gl_rek_cr_2: no_rek,
-                                                gl_jns_cr_2: "2",
-                                                gl_amount_cr_2: trans_fee,
-                                            }
-                                        }
-                                        const request_reversal_keeping = await connect_axios(url_core, 'CORE', "transfer", data_core_reversal)
-                                        let [results, metadata] = await db.sequelize.query(
-                                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
-                                            {
-                                                replacements: [request_reversal_keeping.code, request_reversal_keeping.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
-                                            }
-                                        );
-                                        if (request_reversal_keeping.code !== "000") {
-                                            console.log("failed gateway");
-                                            console.log(request_reversal_keeping);
-                                            request_reversal_keeping.data_keeping = {
-                                                value:0,
-                                                message:"Gagal reversal ke Core"
-                                            }
-                                            res.status(200).send(request_reversal_keeping);
-                                        } else {
-                                            //--berhasil dapat list product update atau insert ke db --//
-                                            console.log("Success");
-                                            console.log(request_reversal_keeping.data);
-                                            res.status(200).send({
-                                                code: "000",
-                                                status: "ok",
-                                                message: "Success",
-                                                data: request_reversal_keeping.data,
-                                                data_keeping: request_keeping,
-                                            });
-                                        }
-                                    } else {
+
+                                    let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                    let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
+                                    console.log("Tambah Transfer Harian");
+                                    console.log(request_transfer_plus);
+                                    
                                     //--berhasil dapat list product update atau insert ke db --//
                                     console.log("Success");
-                                    console.log({
+                                    res_send = {
                                         code: "000",
                                         status: "ok",
                                         message: "Success",
                                         data: request.data,
-                                        data_keeping: request_keeping,
-                                    });
-                                    res.status(200).send({
-                                        code: "000",
-                                        status: "ok",
-                                        message: "Success",
-                                        data: request.data,
-                                        data_keeping: request_keeping,
-                                    });
                                     }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
                                 }
                             }
-                        } else if (trx_type === "REV") {
-                            let get_nosbb = await db.sequelize.query(
-                                `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                                {
-                                    replacements: [trx_code, bpr_id],
-                                    type: db.sequelize.QueryTypes.SELECT,
+                        }
+                    } else if (trx_type === "REV") {
+                        let data_sbb = {bpr_id, tcode:trx_code}
+                        let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                        if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                            console.log(get_nosbb);
+                            res.status(200).send(get_nosbb);
+                        } else {
+                            let nosbb = await split_sbb(get_nosbb.data, trx_code)
+                            const data_core = {
+                                no_hp,
+                                bpr_id,
+                                no_rek,
+                                nama_rek: request_acct.data.nama_rek,
+                                // nama_rek,
+                                bank_tujuan,
+                                nama_bank_tujuan: "",
+                                rek_tujuan,
+                                nama_tujuan,
+                                amount,
+                                trans_fee,
+                                trx_code,
+                                trx_type,
+                                keterangan,
+                                lokasi: "",
+                                tgl_trans,
+                                tgl_transmis: moment().format('YYMMDDHHmmss'),
+                                rrn,
+                                data: {
+                                    gl_rek_db_1: rek_tujuan,
+                                    gl_jns_db_1: "2",
+                                    gl_amount_db_1: amount,
+                                    gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                    gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                    gl_amount_db_2: trans_fee,
+                                    gl_rek_cr_1: no_rek,
+                                    gl_jns_cr_1: "2",
+                                    gl_amount_cr_1: amount,
+                                    gl_rek_cr_2: no_rek,
+                                    gl_jns_cr_2: "2",
+                                    gl_amount_cr_2: trans_fee,
                                 }
-                            )
-                            if (!get_nosbb.length) {
-                                res.status(200).send({
-                                    code: "004",
+                            }
+                            let data_status_core = {bpr_id}
+                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            if (status_core.data.status == "0") {
+                                
+                                let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
+                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                console.log("hold transaction");
+                                console.log(hold_transaction);
+        
+                                res_send = {
+                                    code: "099",
                                     status: "Failed",
-                                    message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
+                                    message: "Gagal, Core SIGN OFF!!!",
                                     data: null,
-                                });
-                            } else {
-                                let nosbb = await split_sbb(get_nosbb, trx_code)
-                                const data_core = {
-                                    no_hp,
-                                    bpr_id,
-                                    no_rek,
-                                    nama_rek: acct[0].nama_rek,
-                                    // nama_rek,
-                                    bank_tujuan,
-                                    nama_bank_tujuan: "",
-                                    rek_tujuan,
-                                    nama_tujuan,
-                                    amount,
-                                    trans_fee,
-                                    trx_code,
-                                    trx_type,
-                                    keterangan,
-                                    lokasi: "",
-                                    tgl_trans,
-                                    tgl_transmis: moment().format('YYMMDDHHmmss'),
-                                    rrn,
-                                    data: {
-                                        gl_rek_db_1: rek_tujuan,
-                                        gl_jns_db_1: "2",
-                                        gl_amount_db_1: amount,
-                                        gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                        gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                        gl_amount_db_2: trans_fee,
-                                        gl_rek_cr_1: no_rek,
-                                        gl_jns_cr_1: "2",
-                                        gl_amount_cr_1: amount,
-                                        gl_rek_cr_2: no_rek,
-                                        gl_jns_cr_2: "2",
-                                        gl_amount_cr_2: trans_fee,
-                                    }
                                 }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
+                            } else {
                                 const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
                                 let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                    `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                     {
                                         replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                     }
@@ -1788,15 +1606,21 @@ const transfer = async (req, res) => {
                                     console.log(request);
                                     res.status(200).send(request);
                                 } else {
+                                    let data_transfer = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'trx/update/trfmin', data_transfer)
+                                    console.log("Kurang Transfer Harian");
+                                    console.log(request_transfer_min);
+                                    
                                     //--berhasil dapat list product update atau insert ke db --//
                                     console.log("Success");
-                                    console.log(request.data);
-                                    res.status(200).send({
+                                    res_send = {
                                         code: "000",
                                         status: "ok",
                                         message: "Success",
                                         data: request.data,
-                                    });
+                                    }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
                                 }
                             }
                         }
@@ -1804,31 +1628,39 @@ const transfer = async (req, res) => {
                 } else {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ?, status = '2'  WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:"2", mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "007",
+                                status: "Failed",
+                                message: "Gagal, mPIN Terblokir!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "007",
-                            status: "Failed",
-                            message: "Gagal, mPIN Terblokir!!!",
-                            data: null,
-                        });
+                            console.log("mpin akan terblokir");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     } else {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ? WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "003",
+                                status: "Failed",
+                                message: "Gagal, Pin Anda Salah!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "003",
-                            status: "Failed",
-                            message: "Gagal, Pin Anda Salah!!!",
-                            data: null,
-                        });
+                            console.log("mpin salah, counter mpin bertambah");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     }
                 }
             }
@@ -1869,160 +1701,159 @@ const withdrawal = async (req, res) => {
         console.log("REQ GATEWAY WITHDRAWAL");
         console.log(req.body);
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_core(no_hp,bpr_id,no_rek,amount,trans_fee,trx_code,trx_type,tgl_trans,tgl_transmis,keterangan,acq_id,terminal_id,rrn) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_gateway(no_hp, bpr_id, no_rek, nama_rek, amount, trans_fee, pin, trx_code, trx_type, keterangan, acq_id, terminal_id, token, lokasi, tgl_trans, rrn, messages_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'REQUEST')`,
             {
                 replacements: [
-                    no_hp, bpr_id, no_rek, amount, trans_fee, trx_code, trx_type, tgl_trans, moment().format('YYMMDDHHmmss'), keterangan, acq_id, terminal_id, rrn,
+                    no_hp,
+                    bpr_id,
+                    no_rek,
+                    nama_rek,
+                    amount,
+                    trans_fee,
+                    pin,
+                    trx_code,
+                    trx_type,
+                    keterangan,
+                    acq_id,
+                    terminal_id,
+                    token,
+                    lokasi,
+                    tgl_trans,
+                    rrn
                 ],
             }
         );
         if (trx_code == "1000") {
+            let res_send
             console.log("CREATE TOKEN");
-            let check_status = await db.sequelize.query(
-                `SELECT * FROM cms_acct_ebpr WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                {
-                    replacements: [no_rek, no_hp, bpr_id],
-                    type: db.sequelize.QueryTypes.SELECT,
-                }
-            );
-            if (!check_status.length) {
-                console.log({
-                    code: "003",
-                    status: "Failed",
-                    message: "Gagal, Terjadi Kesalahan Akun Tidak Terdaftar!!!",
-                    data: null,
-                });
-                res.status(200).send({
-                    code: "003",
-                    status: "Failed",
-                    message: "Gagal, Terjadi Kesalahan Akun Tidak Terdaftar!!!",
-                    data: null,
-                });
+            let data_acct = {bpr_id, no_hp, no_rek}
+            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_acct)
+            if (request_acct.code !== "000" && request_acct.data === null) {
+                console.log(request_acct);
+                res.status(200).send(request_acct);
             } else {
-                let mpin_salah = parseInt(check_status[0].mpin_salah)
+                let mpin_salah = parseInt(request_acct.data.mpin_salah)
 
-                if (check_status[0].status != 2 && check_status[0].status != 1) {
+                if (request_acct.data.status != 2 && request_acct.data.status != 1) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Tidak Dapat Digunakan!!!",
                         data: null,
                     });
-                } else if (mpin_salah == 3 && check_status[0].status == 2) {
+                } else if (mpin_salah == 3 && request_acct.data.status == 2) {
                     res.status(200).send({
                         code: "007",
                         status: "Failed",
                         message: "Gagal, mPIN Terblokir!!!",
                         data: null,
                     });
-                } else if (mpin_salah != 3 && check_status[0].status == 2) {
-                    res.status(200).send({
+                } else if (mpin_salah != 3 && request_acct.data.status == 2) {
+                    res_send = {
                         code: "007",
                         status: "Failed",
                         message: "Gagal, Akun Anda Telah diBlokir!!!",
                         data: null,
-                    });
-                } else if ((check_status[0].mpin == pin || trx_type === "REV") && check_status[0].status == 1) {
-                    let [results, metadata] = await db.sequelize.query(
-                        `UPDATE cms_acct_ebpr SET mpin_salah = '0' WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                        {
-                            replacements: [no_rek, no_hp, bpr_id]
-                        }
-                    );
-                    let check_limit = await db.sequelize.query(
-                        `SELECT * FROM cms_accttype WHERE acct_type = ?`,
-                        {
-                            replacements: [check_status[0].acct_type],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    );
-                    if (!check_limit.length) {
-                        res.status(200).send({
-                            code: "001",
-                            status: "Failed",
-                            message: "Gagal, Terjadi Kesalahan Pencarian Tipe Kartu!!!",
-                            data: null,
-                        });
+                    }
+                    console.log(res_send);
+                    res.status(200).send(res_send);
+                } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
+
+                    let data_status_mpin = {status: request_acct.data.status, mpin_salah:"0", no_rek, no_hp, bpr_id}
+                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                    console.log("update status mpin");
+                    console.log(update_status_mpin);
+
+                    let data_limit = {bpr_id, acct_type:request_acct.data.acct_type}
+                    let check_limit = await connect_axios(url_cms, 'CMS', 'trx/inquiry/limitacctype', data_limit)
+                    if (check_limit.code !== "000" && check_limit.data === null) {
+                        console.log(check_limit);
+                        res.status(200).send(check_limit);
                     } else {
                         let limit_trx, limit_harian, counter_transaksi
                         // let trx_amount, trx_trans_fee = 0
-                        limit_trx = parseInt(check_limit[0].trk_tunai_trx)
-                        limit_harian = parseInt(check_limit[0].trk_tunai_harian)
-                        counter_transaksi = parseInt(check_status[0].tariktunai)
+                        limit_trx = parseInt(check_limit.data.trk_tunai_trx)
+                        limit_harian = parseInt(check_limit.data.trk_tunai_harian)
+                        counter_transaksi = parseInt(request_acct.data.tariktunai)
                         if (amount == undefined) amount = 0
                         if (trans_fee == undefined) trans_fee = 0
                         const total = parseInt(trans_fee) + parseInt(amount)
+
                         if (trx_type == "TRX") {
-                            if (total <= limit_trx) {
-                                if (counter_transaksi + total <= limit_harian) {
-                                    let get_nosbb = await db.sequelize.query(
-                                        `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                                        {
-                                            replacements: [trx_code, bpr_id],
-                                            type: db.sequelize.QueryTypes.SELECT,
-                                        }
-                                    );
-                                    if (!get_nosbb.length) {
-                                        res.status(200).send({
-                                            code: "004",
-                                            status: "Failed",
-                                            message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                                            data: null,
-                                        });
+                            if (total > limit_trx) {
+                                res_send = {
+                                    code: "009",
+                                    status: "Failed",
+                                    message: "Gagal, Nominal Melebihi Limit Transaksi!!!",
+                                    data: null,
+                                }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
+                            } else {
+                                if (counter_transaksi + total > limit_harian) {
+                                    res_send = {
+                                        code: "009",
+                                        status: "Failed",
+                                        message: "Gagal, Transaksi Sudah Melebihi Limit Harian!!!",
+                                        data: null,
+                                    }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
+                                } else {
+                                    let data_sbb = {bpr_id, tcode:trx_code}
+                                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                                    if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                        console.log(get_nosbb);
+                                        res.status(200).send(get_nosbb);
                                     } else {
-                                        let status_core = await db.sequelize.query(
-                                            `SELECT * FROM status_core WHERE bpr_id = ?`,
-                                            {
-                                                replacements: [bpr_id],
-                                                type: db.sequelize.QueryTypes.SELECT,
+                                        let nosbb = await split_sbb(get_nosbb.data, trx_code)
+                                        console.log(keterangan);
+                                        const data_core = {
+                                            no_hp,
+                                            bpr_id,
+                                            no_rek,
+                                            trx_code,
+                                            trx_type,
+                                            amount,
+                                            trans_fee,
+                                            keterangan,
+                                            token: "",
+                                            acq_id: "",
+                                            terminal_id: "",
+                                            lokasi: "",
+                                            tgl_trans,
+                                            tgl_transmis: moment().format('YYMMDDHHmmss'),
+                                            rrn,
+                                            data: {
+                                                gl_rek_db_1: no_rek,
+                                                gl_jns_db_1: "2",
+                                                gl_amount_db_1: amount,
+                                                gl_rek_db_2: no_rek,
+                                                gl_jns_db_2: "2",
+                                                gl_amount_db_2: trans_fee,
+                                                gl_rek_cr_1: nosbb.no_pokok.nosbb_cr,
+                                                gl_jns_cr_1: nosbb.no_pokok.jns_sbb_cr,
+                                                gl_amount_cr_1: amount,
+                                                gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
+                                                gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
+                                                gl_amount_cr_2: trans_fee,
                                             }
-                                        );
-                                        console.log("check status_core");
-                                        console.log(status_core);
-                                        if (status_core[0].status == "0") {
-                                            res.status(200).send({
+                                        }
+                                        let data_status_core = {bpr_id}
+                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                                        if (status_core.data.status == "0") {
+                                            res_send = {
                                                 code: "099",
                                                 status: "Failed",
                                                 message: "Gagal, Core SIGN OFF!!!",
                                                 data: null,
-                                            });
-                                        } else {
-                                            let nosbb = await split_sbb(get_nosbb, trx_code)
-                                            console.log(keterangan);
-                                            const data_core = {
-                                                no_hp,
-                                                bpr_id,
-                                                no_rek,
-                                                trx_code,
-                                                trx_type,
-                                                amount,
-                                                trans_fee,
-                                                keterangan,
-                                                token: "",
-                                                acq_id: "",
-                                                terminal_id: "",
-                                                lokasi: "",
-                                                tgl_trans,
-                                                tgl_transmis: moment().format('YYMMDDHHmmss'),
-                                                rrn,
-                                                data: {
-                                                    gl_rek_db_1: no_rek,
-                                                    gl_jns_db_1: "2",
-                                                    gl_amount_db_1: amount,
-                                                    gl_rek_db_2: no_rek,
-                                                    gl_jns_db_2: "2",
-                                                    gl_amount_db_2: trans_fee,
-                                                    gl_rek_cr_1: nosbb.no_pokok.nosbb_cr,
-                                                    gl_jns_cr_1: nosbb.no_pokok.jns_sbb_cr,
-                                                    gl_amount_cr_1: amount,
-                                                    gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
-                                                    gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
-                                                    gl_amount_cr_2: trans_fee,
-                                                }
                                             }
+                                            console.log(res_send);
+                                            res.status(200).send(res_send);
+                                        } else {
                                             const request = await connect_axios(url_core, 'CORE', "tariktunai", data_core)
                                             let [results, metadata] = await db.sequelize.query(
-                                                `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                                `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                                 {
                                                     replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                                 }
@@ -2033,7 +1864,7 @@ const withdrawal = async (req, res) => {
                                             } else {
                                                 const detail_trans = {
                                                     no_rek,
-                                                    nama_rek: check_status[0].nama_rek,
+                                                    nama_rek: request_acct.data.nama_rek,
                                                     no_hp,
                                                     keterangan,
                                                     tgl_trans: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -2054,201 +1885,134 @@ const withdrawal = async (req, res) => {
                                                     nosbb.no_fee.nmsbb_cr,
                                                     detail_trans
                                                 )
-                                                let [results, metadata] = await db.sequelize.query(
-                                                    `UPDATE cms_acct_ebpr SET tariktunai = tariktunai + ? + ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                                    {
-                                                        replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                                    }
-                                                );
-                                                if (!metadata) {
-                                                    console.log({
-                                                        code: "001",
-                                                        status: "Failed",
-                                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                        data: null,
-                                                    });
-                                                    res.status(200).send({
-                                                        code: "001",
-                                                        status: "Failed",
-                                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                        data: null,
-                                                    });
-                                                } else {
-                                                    request.data['keterangan'] = keterangan
-                                                    //--berhasil dapat list product update atau insert ke db --//
-                                                    console.log("Success");
-                                                    res.status(200).send({
-                                                        code: "000",
-                                                        status: "ok",
-                                                        message: "Success",
-                                                        data: request.data,
-                                                    });
-                                                }
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    res.status(200).send({
-                                        code: "009",
-                                        status: "Failed",
-                                        message: "Gagal, Transaksi Sudah Melebihi Limit Harian!!!",
-                                        data: null,
-                                    });
-                                }
-                            } else {
-                                res.status(200).send({
-                                    code: "009",
-                                    status: "Failed",
-                                    message: "Gagal, Nominal Melebihi Limit Transaksi!!!",
-                                    data: null,
-                                });
-                            }
-                        } else if (trx_type === "REV") {
-                            let get_nosbb = await db.sequelize.query(
-                                `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                                {
-                                    replacements: [trx_code, bpr_id],
-                                    type: db.sequelize.QueryTypes.SELECT,
-                                }
-                            );
-                            if (!get_nosbb.length) {
-                                res.status(200).send({
-                                    code: "004",
-                                    status: "Failed",
-                                    message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                                    data: null,
-                                });
-                            } else {
-                                let status_core = await db.sequelize.query(
-                                    `SELECT * FROM status_core WHERE bpr_id = ?`,
-                                    {
-                                        replacements: [bpr_id],
-                                        type: db.sequelize.QueryTypes.SELECT,
-                                    }
-                                );
-                                if (status_core[0].status == "0") {
-                                    res.status(200).send({
-                                        code: "099",
-                                        status: "Failed",
-                                        message: "Gagal, Core SIGN OFF!!!",
-                                        data: null,
-                                    });
-                                } else {
-                                    let nosbb = await split_sbb(get_nosbb, trx_code)
-                                    console.log(keterangan);
-                                    const data_core = {
-                                        no_hp,
-                                        bpr_id,
-                                        no_rek,
-                                        trx_code,
-                                        trx_type,
-                                        amount,
-                                        trans_fee,
-                                        keterangan,
-                                        token: "",
-                                        acq_id: "",
-                                        terminal_id: "",
-                                        lokasi: "",
-                                        tgl_trans,
-                                        tgl_transmis: moment().format('YYMMDDHHmmss'),
-                                        rrn,
-                                        data: {
-                                            gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
-                                            gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
-                                            gl_amount_db_1: amount,
-                                            gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                            gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                            gl_amount_db_2: trans_fee,
-                                            gl_rek_cr_1: no_rek,
-                                            gl_jns_cr_1: "2",
-                                            gl_amount_cr_1: amount,
-                                            gl_rek_cr_2: no_rek,
-                                            gl_jns_cr_2: "2",
-                                            gl_amount_cr_2: trans_fee,
-                                        }
-                                    }
-                                    if (status_core[0].status == "0") {
-                                        let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-                                            `INSERT INTO hold_transaction (data) VALUES (?)`,
-                                            {
-                                                replacements: [
-                                                    JSON.stringify(data_core),
-                                                ],
-                                            }
-                                        );
-                                        console.log("Success");
-                                        res.status(200).send({
-                                            code: "000",
-                                            status: "ok",
-                                            message: "Success",
-                                            data: req.body,
-                                        });
-                                    } else {
-                                        const request = await connect_axios(url_core, 'CORE', "tariktunai", data_core)
-                                        let [results, metadata] = await db.sequelize.query(
-                                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
-                                            {
-                                                replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
-                                            }
-                                        );
-                                        if (request.code !== "000") {
-                                            console.log(request);
-                                            res.status(200).send(request);
-                                        } else {
-                                            const detail_trans = {
-                                                no_rek,
-                                                nama_rek,
-                                                no_hp,
-                                                keterangan,
-                                                tgl_trans: moment().format('YYYY-MM-DD HH:mm:ss'),
-                                                trx_type,
-                                                status: "R",
-                                                tcode: "000",
-                                                noreff: request.data.noreff,
-                                                rrn
-                                            }
-                                            await update_gl_oy_debet(
-                                                amount,
-                                                trans_fee,
-                                                bpr_id,
-                                                trx_code,
-                                                nosbb.no_pokok.nosbb_cr,
-                                                nosbb.no_fee.nosbb_cr,
-                                                nosbb.no_pokok.nmsbb_cr,
-                                                nosbb.no_fee.nmsbb_cr,
-                                                detail_trans
-                                            )
-                                            let [results, metadata] = await db.sequelize.query(
-                                                `UPDATE cms_acct_ebpr SET tariktunai = tariktunai - ? - ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                                {
-                                                    replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                                }
-                                            );
-                                            if (!metadata) {
-                                                console.log({
-                                                    code: "001",
-                                                    status: "Failed",
-                                                    message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                    data: null,
-                                                });
-                                                res.status(200).send({
-                                                    code: "001",
-                                                    status: "Failed",
-                                                    message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                                    data: null,
-                                                });
-                                            } else {
+
+                                                let data_tarik_tunai = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                                let request_tartun_plus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunplus', data_tarik_tunai)
+                                                console.log("Tambah Tartun Harian");
+                                                console.log(request_tartun_plus);
+                                                
                                                 request.data['keterangan'] = keterangan
-                                                //--berhasil dapat list product update atau insert ke db --//
                                                 console.log("Success");
-                                                res.status(200).send({
+                                                res_send = {
                                                     code: "000",
                                                     status: "ok",
                                                     message: "Success",
                                                     data: request.data,
-                                                });
+                                                }
+                                                console.log(res_send);
+                                                res.status(200).send(res_send);
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        } else if (trx_type === "REV") {
+                            let data_sbb = {bpr_id, tcode:trx_code}
+                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                            if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                console.log(get_nosbb);
+                                res.status(200).send(get_nosbb);
+                            } else {
+                                let nosbb = await split_sbb(get_nosbb.data, trx_code)
+                                console.log(keterangan);
+                                const data_core = {
+                                    no_hp,
+                                    bpr_id,
+                                    no_rek,
+                                    trx_code,
+                                    trx_type,
+                                    amount,
+                                    trans_fee,
+                                    keterangan,
+                                    token: "",
+                                    acq_id: "",
+                                    terminal_id: "",
+                                    lokasi: "",
+                                    tgl_trans,
+                                    tgl_transmis: moment().format('YYMMDDHHmmss'),
+                                    rrn,
+                                    data: {
+                                        gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
+                                        gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
+                                        gl_amount_db_1: amount,
+                                        gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                        gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                        gl_amount_db_2: trans_fee,
+                                        gl_rek_cr_1: no_rek,
+                                        gl_jns_cr_1: "2",
+                                        gl_amount_cr_1: amount,
+                                        gl_rek_cr_2: no_rek,
+                                        gl_jns_cr_2: "2",
+                                        gl_amount_cr_2: trans_fee,
+                                    }
+                                }
+                                let data_status_core = {bpr_id}
+                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                                if (status_core.data.status == "0") {
+                                    let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
+                                    let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                    console.log("hold transaction");
+                                    console.log(hold_transaction);
+
+                                    res_send = {
+                                        code: "099",
+                                        status: "Failed",
+                                        message: "Gagal, Core SIGN OFF!!!",
+                                        data: null,
+                                    }
+                                    console.log(res_send);
+                                    res.status(200).send(res_send);
+                                } else {
+                                    const request = await connect_axios(url_core, 'CORE', "tariktunai", data_core)
+                                    let [results, metadata] = await db.sequelize.query(
+                                        `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                        {
+                                            replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
+                                        }
+                                    );
+                                    if (request.code !== "000") {
+                                        console.log(request);
+                                        res.status(200).send(request);
+                                    } else {
+                                        const detail_trans = {
+                                            no_rek,
+                                            nama_rek,
+                                            no_hp,
+                                            keterangan,
+                                            tgl_trans: moment().format('YYYY-MM-DD HH:mm:ss'),
+                                            trx_type,
+                                            status: "R",
+                                            tcode: "000",
+                                            noreff: request.data.noreff,
+                                            rrn
+                                        }
+                                        await update_gl_oy_debet(
+                                            amount,
+                                            trans_fee,
+                                            bpr_id,
+                                            trx_code,
+                                            nosbb.no_pokok.nosbb_cr,
+                                            nosbb.no_fee.nosbb_cr,
+                                            nosbb.no_pokok.nmsbb_cr,
+                                            nosbb.no_fee.nmsbb_cr,
+                                            detail_trans
+                                        )
+
+                                        let data_tarik_tunai = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                        let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                        console.log("Kurang Tartun Harian");
+                                        console.log(request_tartun_minus);
+                                        
+                                        request.data['keterangan'] = keterangan
+                                        console.log("Success");
+                                        res_send = {
+                                            code: "000",
+                                            status: "ok",
+                                            message: "Success",
+                                            data: request.data,
+                                        }
+                                        console.log(res_send);
+                                        res.status(200).send(res_send);
                                     }
                                 }
                             }
@@ -2257,31 +2021,39 @@ const withdrawal = async (req, res) => {
                 } else {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ?, status = '2'  WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:"2", mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "007",
+                                status: "Failed",
+                                message: "Gagal, mPIN Terblokir!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "007",
-                            status: "Failed",
-                            message: "Gagal, mPIN Terblokir!!!",
-                            data: null,
-                        });
+                            console.log("mpin akan terblokir");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     } else {
-                        let [results, metadata] = await db.sequelize.query(
-                            `UPDATE cms_acct_ebpr SET mpin_salah = ? WHERE no_hp = ? AND no_rek = ?`,
-                            {
-                                replacements: [`${mpin_salah}`, no_hp, no_rek,]
+                        let data_status_mpin = {status:request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id}
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
+                            console.log(update_status_mpin);
+                            res.status(200).send(update_status_mpin);
+                        } else {
+                            res_send = {
+                                code: "003",
+                                status: "Failed",
+                                message: "Gagal, Pin Anda Salah!!!",
+                                data: null,
                             }
-                        );
-                        res.status(200).send({
-                            code: "003",
-                            status: "Failed",
-                            message: "Gagal, Pin Anda Salah!!!",
-                            data: null,
-                        });
+                            console.log("mpin salah, counter mpin bertambah");
+                            console.log(res_send);
+                            res.status(200).send(res_send);
+                        }
                     }
                 }
             }
@@ -2292,45 +2064,27 @@ const withdrawal = async (req, res) => {
             } else {
                 jurnal_bpr = bpr_id
             }
-            let get_nosbb = await db.sequelize.query(
-                `SELECT * FROM gl_trans WHERE tcode = ? AND bpr_id = ?`,
-                {
-                    replacements: ["1100", jurnal_bpr],
-                    type: db.sequelize.QueryTypes.SELECT,
-                }
-            );
-            if (!get_nosbb.length) {
-                console.log({
-                    code: "004",
-                    status: "Failed",
-                    message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                    data: null,
-                });
-                res.status(200).send({
-                    code: "004",
-                    status: "Failed",
-                    message: "Gagal, Terjadi Kesalahan Pencarian Ledger!!!",
-                    data: null,
-                });
+            let data_sbb = {bpr_id, tcode: "1100"}
+            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+            if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                console.log(get_nosbb);
+                res.status(200).send(get_nosbb);
             } else {
-                let nosbb = await split_sbb(get_nosbb, "1100")
+                let nosbb = await split_sbb(get_nosbb.data, "1100")
                 let on_us = {}, issuer = {}, acquirer = {}
                 if (trx_type === "TRX") {
                     console.log("TARIK TUNAI ATM TRX");
-                    let status_core = await db.sequelize.query(
-                        `SELECT * FROM status_core WHERE bpr_id = ?`,
-                        {
-                            replacements: [jurnal_bpr],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    );
-                    if (status_core[0].status == "0") {
-                        res.status(200).send({
+                    let data_status_core = {bpr_id}
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                    if (status_core.data.status == "0") {
+                        res_send = {
                             code: "099",
                             status: "Failed",
                             message: "Gagal, Core SIGN OFF!!!",
                             data: null,
-                        });
+                        }
+                        console.log(res_send);
+                        res.status(200).send(res_send);
                     } else {
                         if (keterangan == "on_us") {
                             on_us = {
@@ -2407,13 +2161,13 @@ const withdrawal = async (req, res) => {
                         }
                         const request = await connect_axios(url_core, 'CORE', "tariktunai", data_core)
                         let [results, metadata] = await db.sequelize.query(
-                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                            `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                             {
                                 replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                             }
                         );
                         if (request.code !== "000") {
-                            console.log(request); 600931
+                            console.log(request)
                             res.status(200).send(request);
                         } else {
                             const detail_trans = {
@@ -2427,7 +2181,7 @@ const withdrawal = async (req, res) => {
                                 noreff: request.data.noreff,
                                 rrn
                             }
-                            let nosbb = await split_sbb(get_nosbb, trx_code)
+                            let nosbb = await split_sbb(get_nosbb.data, trx_code)
                             let data_db, data_cr = {}
                             if (keterangan === "on_us") {
                                 data_db = {
@@ -2497,23 +2251,18 @@ const withdrawal = async (req, res) => {
                             request.data['terminal_id'] = terminal_id
                             //--berhasil dapat list product update atau insert ke db --//
                             console.log("Success");
-                            res.status(200).send({
+                            res_send = {
                                 code: "000",
                                 status: "ok",
                                 message: "Success",
                                 data: request.data,
-                            });
+                            }
+                            console.log(res_send);
+                            res.status(200).send(res_send);
                         }
                     }
                 } else if (trx_type === "REV") {
                     console.log("TARIK TUNAI ATM REV");
-                    let status_core = await db.sequelize.query(
-                        `SELECT * FROM status_core WHERE bpr_id = ?`,
-                        {
-                            replacements: [bpr_id],
-                            type: db.sequelize.QueryTypes.SELECT,
-                        }
-                    );
                     if (keterangan == "on_us") {
                         on_us = {
                             gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_cr,
@@ -2585,27 +2334,28 @@ const withdrawal = async (req, res) => {
                             acquirer,
                         }
                     }
-                    if (status_core[0].status == "0") {
-                        let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-                            `INSERT INTO hold_transaction (data) VALUES (?)`,
-                            {
-                                replacements: [
-                                    JSON.stringify(data_core),
-                                ],
-                            }
-                        );
-                        console.log("Success");
-                        res.status(200).send({
-                            code: "000",
-                            status: "ok",
-                            message: "Success",
-                            data: req.body,
-                        });
+                    let data_status_core = {bpr_id}
+                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                    if (status_core.data.status == "0") {
+                        
+                        let data_hold_trans = {bpr_id, data:JSON.stringify(data_core)}
+                        let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                        console.log("hold transaction");
+                        console.log(hold_transaction);
+
+                        res_send = {
+                            code: "099",
+                            status: "Failed",
+                            message: "Gagal, Core SIGN OFF!!!",
+                            data: null,
+                        }
+                        console.log(res_send);
+                        res.status(200).send(res_send);
                     } else {
                         const request = await connect_axios(url_core, 'CORE', "tariktunai", data_core)
                         console.log("REV ATM "+keterangan);
                         let [results, metadata] = await db.sequelize.query(
-                            `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                            `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                             {
                                 replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                             }
@@ -2625,7 +2375,7 @@ const withdrawal = async (req, res) => {
                                 noreff: request.data.noreff,
                                 rrn
                             }
-                            let nosbb = await split_sbb(get_nosbb, trx_code)
+                            let nosbb = await split_sbb(get_nosbb.data, trx_code)
                             let data_db, data_cr = {}
                             if (keterangan === "on_us") {
                                 await update_gl_oy_debet(
@@ -2639,36 +2389,22 @@ const withdrawal = async (req, res) => {
                                     nosbb.no_fee.On_Us.nmsbb_cr,
                                     detail_trans
                                 )
-                                let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE cms_acct_ebpr SET tariktunai = tariktunai - ? - ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                    {
-                                        replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                    }
-                                );
-                                if (!metadata) {
-                                    console.log({
-                                        code: "001",
-                                        status: "Failed",
-                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                        data: null,
-                                    });
-                                    res.status(200).send({
-                                        code: "001",
-                                        status: "Failed",
-                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                        data: null,
-                                    });
-                                } else {
-                                    request.data['terminal_id'] = terminal_id
-                                    //--berhasil dapat list product update atau insert ke db --//
-                                    console.log("Success");
-                                    res.status(200).send({
-                                        code: "000",
-                                        status: "ok",
-                                        message: "Success",
-                                        data: request.data,
-                                    });
+
+                                let data_tarik_tunai = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                console.log("Kurang Tartun Harian");
+                                console.log(request_tartun_minus);
+                                
+                                request.data['terminal_id'] = terminal_id
+                                console.log("Success");
+                                res_send = {
+                                    code: "000",
+                                    status: "ok",
+                                    message: "Success",
+                                    data: request.data,
                                 }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
                             } else if (keterangan === "issuer") {
                                 await update_gl_oy_debet(
                                     amount,
@@ -2712,36 +2448,22 @@ const withdrawal = async (req, res) => {
                                     nama_rek_fee: nosbb.no_fee.Acquirer.nmsbb_cr
                                 }
                                 await update_gl_oy_db_cr(data_db, data_cr, detail_trans)
-                                let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE cms_acct_ebpr SET tariktunai = tariktunai - ? - ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                    {
-                                        replacements: [amount, trans_fee, no_rek, no_hp, bpr_id],
-                                    }
-                                );
-                                if (!metadata) {
-                                    console.log({
-                                        code: "001",
-                                        status: "Failed",
-                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                        data: null,
-                                    });
-                                    res.status(200).send({
-                                        code: "001",
-                                        status: "Failed",
-                                        message: "Gagal, Terjadi Kesalahan Update Counter Transaksi!!!",
-                                        data: null,
-                                    });
-                                } else {
-                                    request.data['terminal_id'] = terminal_id
-                                    //--berhasil dapat list product update atau insert ke db --//
-                                    console.log("Success");
-                                    res.status(200).send({
-                                        code: "000",
-                                        status: "ok",
-                                        message: "Success",
-                                        data: request.data,
-                                    });
+
+                                let data_tarik_tunai = {amount, trans_fee, no_rek, no_hp, bpr_id}
+                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                console.log("Kurang Tartun Harian");
+                                console.log(request_tartun_minus);
+                                
+                                request.data['terminal_id'] = terminal_id
+                                console.log("Success");
+                                res_send = {
+                                    code: "000",
+                                    status: "ok",
+                                    message: "Success",
+                                    data: request.data,
                                 }
+                                console.log(res_send);
+                                res.status(200).send(res_send);
                             }
                         }
                     }
@@ -2777,7 +2499,7 @@ const ppob = async (req, res) => {
     } = req.body;
     try {
         let [res_log_pokok, meta_log_pokok] = await db.sequelize.query(
-            `INSERT INTO log_core(no_hp,bpr_id,no_rek,amount,trans_fee,trx_code,trx_type,tgl_trans,tgl_transmis,keterangan,rrn) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+            `INSERT INTO log_gateway(no_hp,bpr_id,no_rek,amount,trans_fee,trx_code,trx_type,tgl_trans,tgl_transmis,keterangan,rrn) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
             {
                 replacements: [
                     no_hp, bpr_id, no_rek, amount, trans_fee, trx_code, trx_type, tgl_trans, moment().format('YYMMDDHHmmss'), product_name, rrn,
@@ -2831,7 +2553,7 @@ const ppob = async (req, res) => {
                                 data: null,
                             });
                         } else {
-                            const nosbb = await split_sbb(get_nosbb, trx_code)
+                            const nosbb = await split_sbb(get_nosbb.data, trx_code)
                             const data_core = {
                                 no_hp,
                                 bpr_id,
@@ -2861,7 +2583,7 @@ const ppob = async (req, res) => {
                             }
                             const request = await connect_axios(url_core, 'CORE', "ppob", data_core)
                             let [results, metadata] = await db.sequelize.query(
-                                `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                 {
                                     replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                 }
@@ -2974,7 +2696,7 @@ const ppob = async (req, res) => {
                         } else {
                             const request = await connect_axios(url_core, 'CORE', "ppob", data_core)
                             let [results, metadata] = await db.sequelize.query(
-                                `UPDATE log_core SET rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
+                                `UPDATE log_gateway SET messages_type = 'RESPONSE', rcode = ?, messages = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ? AND amount = ? AND trans_fee = ? AND tgl_trans = ? AND rrn = ?`,
                                 {
                                     replacements: [request.code, request.message, no_rek, no_hp, bpr_id, amount, trans_fee, tgl_trans, rrn],
                                 }
@@ -3072,217 +2794,6 @@ const ppob = async (req, res) => {
     }
 };
 
-//API untuk validasi mpin
-const mpin = async (req, res) => {
-    let { no_rek, no_hp, bpr_id, pin, amount, trans_fee, tgl_trans, trx_code, rrn } = req.body;
-    try {
-        console.log("REQ BODY MPIN");
-        console.log(req.body);
-        pin = `${((parseInt(pin) + 111111 - 999999) / 2)}`
-        pin = `${pin}${no_hp.substring(no_hp.length - 4, no_hp.length)}`
-        let mpin = encryptStringWithRsaPublicKey(pin, "./utility/privateKey.pem");
-
-        let counter = await db.sequelize.query(
-            `SELECT * FROM cms_acct_ebpr WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-            {
-                replacements: [no_rek, no_hp, bpr_id],
-                type: db.sequelize.QueryTypes.SELECT,
-            }
-        );
-        if (!counter.length) {
-            res.status(200).send({
-                code: "004",
-                status: "Failed",
-                message: "Gagal, Terjadi Kesalahan Pencarian Rekening!!!",
-                rrn: rrn,
-                data: null,
-            });
-        } else {
-            let mpin_salah = parseInt(counter[0].mpin_salah)
-
-            if (mpin_salah != 3 && counter[0].status == 1) {
-                const data_core = {
-                    // no_hp:rekening[0].no_hp,
-                    bpr_id,
-                    no_rek,
-                    gl_jns: "2",
-                    trx_code: "0200",
-                    trx_type: "TRX",
-                    tgl_trans,
-                    rrn,
-                }
-                const check_rek = await connect_axios(url_core, 'CORE', "Inquiry", data_core)
-                if (check_rek.code !== "000") {
-                    console.log(check_rek);
-                    res.status(200).send(check_rek);
-                } else {
-                    console.log(check_rek.data);
-                    if (check_rek.data.status_rek == "AKTIF") {
-                        let Auth = await db.sequelize.query(
-                            `SELECT * FROM cms_acct_ebpr WHERE mpin = ? AND no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                            {
-                                replacements: [mpin, no_rek, no_hp, bpr_id],
-                                type: db.sequelize.QueryTypes.SELECT,
-                            }
-                        );
-                        if (!Auth.length) {
-                            mpin_salah = mpin_salah + 1
-                            if (mpin_salah == 3) {
-                                let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE cms_acct_ebpr SET mpin_salah = ?, status = '2' WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                    {
-                                        replacements: [mpin_salah, no_rek, no_hp, bpr_id]
-                                    }
-                                );
-                                res.status(200).send({
-                                    code: "007",
-                                    status: "Failed",
-                                    message: "Gagal, mPIN Terblokir!!!",
-                                    data: null,
-                                });
-                            } else {
-                                let [results, metadata] = await db.sequelize.query(
-                                    `UPDATE cms_acct_ebpr SET mpin_salah = ? WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                    {
-                                        replacements: [mpin_salah, no_rek, no_hp, bpr_id]
-                                    }
-                                );
-                                res.status(200).send({
-                                    code: "006",
-                                    status: "Failed",
-                                    message: "Gagal, Terjadi Kesalahan Validasi mPIN!!!",
-                                    data: null,
-                                });
-                            }
-                        } else {
-                            mpin_salah = 0
-                            let [results, metadata] = await db.sequelize.query(
-                                `UPDATE cms_acct_ebpr SET mpin_salah = ?, status = '1' WHERE no_rek = ? AND no_hp = ? AND bpr_id = ?`,
-                                {
-                                    replacements: [mpin_salah, no_rek, no_hp, bpr_id]
-                                }
-                            );
-                            if (!metadata) {
-                                res.status(200).send({
-                                    code: "001",
-                                    status: "Failed",
-                                    message: "Gagal, Terjadi Kesalahan Membuat Token mPIN!!!",
-                                    data: null,
-                                });
-                            } else {
-                                let check_limit = await db.sequelize.query(
-                                    `SELECT * FROM cms_accttype WHERE acct_type = ?`,
-                                    {
-                                        replacements: [Auth[0].acct_type],
-                                        type: db.sequelize.QueryTypes.SELECT,
-                                    }
-                                );
-                                if (!check_limit.length) {
-                                    res.status(200).send({
-                                        code: "001",
-                                        status: "Failed",
-                                        message: "Gagal, Terjadi Kesalahan Pencarian Tipe Kartu!!!",
-                                        data: null,
-                                    });
-                                } else {
-                                    let limit_trx, limit_harian, counter_transaksi
-                                    // let trx_amount, trx_trans_fee = 0
-                                    if (trx_code == "1000") {
-                                        limit_trx = parseInt(check_limit[0].trk_tunai_trx)
-                                        limit_harian = parseInt(check_limit[0].trk_tunai_harian)
-                                        counter_transaksi = parseInt(Auth[0].tariktunai)
-                                    } else if (trx_code == "5000") {
-                                        limit_trx = parseInt(check_limit[0].ppob_trx)
-                                        limit_harian = parseInt(check_limit[0].ppob_harian)
-                                        counter_transaksi = parseInt(Auth[0].ppob)
-                                    } else {
-                                        limit_trx = parseInt(check_limit[0].trf_trx)
-                                        limit_harian = parseInt(check_limit[0].trf_harian)
-                                        counter_transaksi = parseInt(Auth[0].transfer)
-                                    }
-                                    if (amount == undefined) amount = 0
-                                    if (trans_fee == undefined) trans_fee = 0
-                                    const total = parseInt(trans_fee) + parseInt(amount)
-                                    if (total <= limit_trx) {
-                                        if (counter_transaksi + total <= limit_harian) {
-                                            let token_mpin = generateString(20);
-                                            res.status(200).send({
-                                                code: "000",
-                                                status: "Success",
-                                                message: "Transaksi anda berhasil diproses",
-                                                data: {
-                                                    no_hp,
-                                                    bpr_id,
-                                                    no_rek,
-                                                    nama_rek: Auth[0].nama_rek,
-                                                    token_mpin,
-                                                    tgl_trans
-                                                },
-                                            });
-                                        } else {
-                                            res.status(200).send({
-                                                code: "009",
-                                                status: "Failed",
-                                                message: "Gagal, Transaksi Sudah Melebihi Limit Harian!!!",
-                                                data: null,
-                                            });
-                                        }
-                                    } else {
-                                        res.status(200).send({
-                                            code: "009",
-                                            status: "Failed",
-                                            message: "Gagal, Nominal Melebihi Limit Transaksi!!!",
-                                            data: null,
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        res.status(200).send({
-                            code: "008",
-                            status: "Failed",
-                            message: check_rek.data.status_rek,
-                            rrn: rrn,
-                            data: null,
-                        });
-                    }
-                }
-            } else if (mpin_salah == 3 && counter[0].status == 2) {
-                res.status(200).send({
-                    code: "007",
-                    status: "Failed",
-                    message: "Gagal, mPIN Terblokir!!!",
-                    data: null,
-                });
-            } else if (mpin_salah !== 3 && counter[0].status == 2) {
-                res.status(200).send({
-                    code: "007",
-                    status: "Failed",
-                    message: "Gagal, Akun Anda Telah diBlokir!!!",
-                    data: null,
-                });
-            } else {
-                res.status(200).send({
-                    code: "003",
-                    status: "Failed",
-                    message: "Gagal, Akun Tidak Dapat Digunakan!!!",
-                    data: null,
-                });
-            }
-        }
-    } catch (error) {
-        //--error server--//
-        console.log("erro get product", error);
-        res.status(200).send({
-            code: "099",
-            status: "Failed",
-            message: "INVALID DATA!!!",
-            data: error,
-        })
-    }
-};
-
 //API untuk Sign In Sign Off
 const sign_in_off = async (req, res) => {
     let { bpr_id, status, tgl_trans } = req.body;
@@ -3364,53 +2875,10 @@ const sign_in_off = async (req, res) => {
     }
 }
 
-
-
-// schedule.scheduleJob('* * * * *', async function () {
-//     let date_now = moment().format('YYYY-MM-DD HH:mm:ss')
-//     let timestamp = await db.sequelize.query(
-//       `SELECT * FROM timetable WHERE type = 'limit'`,
-//       {
-//         type: db.sequelize.QueryTypes.SELECT,
-//       }
-//     );
-//     console.log(date_now);
-//     let date_reset = moment(timestamp[0].time).add(1, 'days').format('YYYY-MM-DD HH:mm:ss')
-//     console.log(date_reset);
-//     if (date_now > date_reset) {
-//         let account = await db.sequelize.query(
-//             `SELECT * FROM cms_acct_ebpr WHERE status = '1'`,
-//             {
-//             type: db.sequelize.QueryTypes.SELECT,
-//             }
-//         );
-//         for (let i = 0; i < account.length; i++) {
-//             let [results2, metadata2] = await db.sequelize.query(
-//             `UPDATE cms_acct_ebpr SET tariktunai = '0', transfer = '0', pindah_buku = '0', ppob = '0', ppob_bayar = '0' WHERE user_id = ? AND no_hp = ? AND bpr_id = ?`,
-//             {
-//             replacements: [
-//                 account[i].user_id, account[i].no_hp, account[i].bpr_id
-//             ],
-//             }
-//             );
-//             console.count(" Task Done account @" + date_now);
-//         }
-//         let [results, metadata] = await db.sequelize.query(
-//             `UPDATE timetable SET time = ? WHERE type = 'limit'`,
-//             {
-//             replacements: [
-//                 date_reset
-//             ],
-//             }
-//         );
-//     }
-// })
-
 module.exports = {
     inquiry_account,
-    sign_in_off,
     transfer,
     withdrawal,
     ppob,
-    mpin
+    sign_in_off
 };
