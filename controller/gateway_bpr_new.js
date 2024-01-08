@@ -413,43 +413,47 @@ function split_sbb(data, tcode) {
     let no_pokok = {}
     let no_fee = {}
     let tagihan = {}
+    let fee_bpr = {}
     if (tcode == "1100") {
         for (let i = 0; i < data.length; i++) {
             // console.log(data[i]);
             if (data[i].ket_tcode == "Issuer") {
+                if (data[i].jns_gl == "0") {
+                    tagihan = data[i]
+                } else if (data[i].jns_gl == "2") {
+                    fee_bpr = data[i]
+                }
                 tagihan = data[i]
             } else if (data[i].ket_tcode == "Acquirer") {
                 if (data[i].jns_gl == "0") {
                     no_pokok['Acquirer'] = data[i]
                 } else if (data[i].jns_gl == "1") {
                     no_fee['Acquirer'] = data[i]
+                } else if (data[i].jns_gl == "2") {
+                    fee_bpr['Acquirer'] = data[i]
                 }
             } else if (data[i].ket_tcode == "On-Us") {
                 if (data[i].jns_gl == "0") {
                     no_pokok['On_Us'] = data[i]
                 } else if (data[i].jns_gl == "1") {
                     no_fee['On_Us'] = data[i]
+                } else if (data[i].jns_gl == "2") {
+                    fee_bpr['On_Us'] = data[i]
                 }
             }
         }
         return { no_pokok, no_fee, tagihan }
     } else {
-        if (data[0].jns_gl == "0") {
-            if (data.length > 1) {
+        for (let i = 0; i < data.length; i++) {
+            if (data[0].jns_gl == "0") {
                 no_pokok = data[0]
-                no_fee = data[1]
-            } else {
-                return data[0]
-            }
-        } else if (data[0].jns_gl == "1") {
-            if (data.length > 1) {
-                no_pokok = data[1]
+            } else if (data[0].jns_gl == "1") {
                 no_fee = data[0]
-            } else {
-                return data[0]
+            } else if (data[0].jns_gl == "1") {
+                fee_bpr = data[0]
             }
         }
-        return { no_pokok, no_fee, tagihan }
+        return { no_pokok, no_fee, tagihan, fee_bpr }
     }
 }
 
@@ -811,6 +815,7 @@ const transfer = async (req, res) => {
         nama_tujuan,
         amount,
         trans_fee,
+        fee_bpr,
         xusername,
         xpassword,
         token,
@@ -903,15 +908,21 @@ const transfer = async (req, res) => {
                                         gl_rek_db_1: no_rek,
                                         gl_jns_db_1: "2",
                                         gl_amount_db_1: amount,
-                                        gl_rek_db_2: no_rek,
-                                        gl_jns_db_2: "2",
-                                        gl_amount_db_2: trans_fee,
                                         gl_rek_cr_1: nosbb.no_pokok.nosbb_cr,
                                         gl_jns_cr_1: nosbb.no_pokok.jns_sbb_cr,
                                         gl_amount_cr_1: amount,
+                                        gl_rek_db_2: no_rek,
+                                        gl_jns_db_2: "2",
+                                        gl_amount_db_2: trans_fee,
                                         gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
                                         gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
                                         gl_amount_cr_2: trans_fee,
+                                        gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                        gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                        gl_amount_db_3: fee_bpr,
+                                        gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                        gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                        gl_amount_cr_3: fee_bpr,
                                     }
                                 }
                                 const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
@@ -970,15 +981,21 @@ const transfer = async (req, res) => {
                                                 gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
                                                 gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
                                                 gl_amount_db_1: amount,
-                                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                                gl_amount_db_2: trans_fee,
                                                 gl_rek_cr_1: no_rek,
                                                 gl_jns_cr_1: "2",
                                                 gl_amount_cr_1: amount,
+                                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                                gl_amount_db_2: trans_fee,
                                                 gl_rek_cr_2: no_rek,
                                                 gl_jns_cr_2: "2",
                                                 gl_amount_cr_2: trans_fee,
+                                                gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                                                gl_amount_db_3: fee_bpr,
+                                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                                                gl_amount_cr_3: fee_bpr,
                                             }
                                         }
                                         const request_reversal_keeping = await connect_axios(url_core, 'CORE', "transfer", data_core_rev)
@@ -1076,15 +1093,21 @@ const transfer = async (req, res) => {
                                     gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
                                     gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
                                     gl_amount_db_1: amount,
-                                    gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                    gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                    gl_amount_db_2: trans_fee,
                                     gl_rek_cr_1: no_rek,
                                     gl_jns_cr_1: "2",
                                     gl_amount_cr_1: amount,
+                                    gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                    gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                    gl_amount_db_2: trans_fee,
                                     gl_rek_cr_2: no_rek,
                                     gl_jns_cr_2: "2",
                                     gl_amount_cr_2: trans_fee,
+                                    gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                                    gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                                    gl_amount_db_3: fee_bpr,
+                                    gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                                    gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                                    gl_amount_cr_3: fee_bpr,
                                 }
                             }
                             let data_status_core = {bpr_id}
@@ -1241,15 +1264,21 @@ const transfer = async (req, res) => {
                                 gl_rek_db_1: nosbb.no_pokok.nosbb_db,
                                 gl_jns_db_1: nosbb.no_pokok.jns_sbb_db,
                                 gl_amount_db_1: amount,
-                                gl_rek_db_2: nosbb.no_fee.nosbb_db,
-                                gl_jns_db_2: nosbb.no_fee.jns_sbb_db,
-                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_1: rek_tujuan,
                                 gl_jns_cr_1: "2",
                                 gl_amount_cr_1: amount,
+                                gl_rek_db_2: nosbb.no_fee.nosbb_db,
+                                gl_jns_db_2: nosbb.no_fee.jns_sbb_db,
+                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
                                 gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
-                                gl_amount_cr_2: trans_fee
+                                gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         }
                         const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
@@ -1348,15 +1377,21 @@ const transfer = async (req, res) => {
                                 gl_rek_db_1: rek_tujuan,
                                 gl_jns_db_1: "2",
                                 gl_amount_db_1: amount,
-                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_1: nosbb.no_pokok.nosbb_db,
                                 gl_jns_cr_1: nosbb.no_pokok.jns_sbb_db,
                                 gl_amount_cr_1: amount,
+                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_2: nosbb.no_fee.nosbb_db,
                                 gl_jns_cr_2: nosbb.no_fee.jns_sbb_db,
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         }
                         const request = await connect_axios(url_core, 'CORE', "transfer", data_core)
@@ -1686,6 +1721,7 @@ const withdrawal = async (req, res) => {
         nama_rek,
         amount,
         trans_fee,
+        fee_bpr,
         pin,
         trx_code,
         trx_type,
@@ -1828,15 +1864,21 @@ const withdrawal = async (req, res) => {
                                                 gl_rek_db_1: no_rek,
                                                 gl_jns_db_1: "2",
                                                 gl_amount_db_1: amount,
-                                                gl_rek_db_2: no_rek,
-                                                gl_jns_db_2: "2",
-                                                gl_amount_db_2: trans_fee,
                                                 gl_rek_cr_1: nosbb.no_pokok.nosbb_cr,
                                                 gl_jns_cr_1: nosbb.no_pokok.jns_sbb_cr,
                                                 gl_amount_cr_1: amount,
+                                                gl_rek_db_2: no_rek,
+                                                gl_jns_db_2: "2",
+                                                gl_amount_db_2: trans_fee,
                                                 gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
                                                 gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
                                                 gl_amount_cr_2: trans_fee,
+                                                gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                                gl_amount_db_3: fee_bpr,
+                                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                                gl_amount_cr_3: fee_bpr,
                                             }
                                         }
                                         let data_status_core = {bpr_id}
@@ -1935,15 +1977,21 @@ const withdrawal = async (req, res) => {
                                         gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
                                         gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
                                         gl_amount_db_1: amount,
-                                        gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                        gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                        gl_amount_db_2: trans_fee,
                                         gl_rek_cr_1: no_rek,
                                         gl_jns_cr_1: "2",
                                         gl_amount_cr_1: amount,
+                                        gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                        gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                        gl_amount_db_2: trans_fee,
                                         gl_rek_cr_2: no_rek,
                                         gl_jns_cr_2: "2",
                                         gl_amount_cr_2: trans_fee,
+                                        gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                                        gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                                        gl_amount_db_3: fee_bpr,
+                                        gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                                        gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                                        gl_amount_cr_3: fee_bpr,
                                     }
                                 }
                                 let data_status_core = {bpr_id}
@@ -2091,49 +2139,63 @@ const withdrawal = async (req, res) => {
                                 gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_db,
                                 gl_jns_db_1: nosbb.no_pokok.On_Us.jns_sbb_db,
                                 gl_amount_db_1: amount,
+                                gl_rek_cr_1: nosbb.no_pokok.On_Us.nosbb_cr,
+                                gl_jns_cr_1: "2",
+                                gl_amount_cr_1: amount,
                                 gl_rek_db_2: nosbb.no_fee.On_Us.nosbb_db,
                                 gl_jns_db_2: nosbb.no_fee.On_Us.jns_sbb_db,
                                 gl_amount_db_2: trans_fee,
-                                gl_rek_cr_1: nosbb.no_pokok.On_Us.nosbb_cr,
-                                // gl_jns_cr_1: nosbb.no_pokok.On_Us.jns_sbb_cr,
-                                gl_jns_cr_1: "2",
-                                gl_amount_cr_1: amount,
                                 gl_rek_cr_2: nosbb.no_fee.On_Us.nosbb_cr,
-                                // gl_jns_cr_2: nosbb.no_fee.On_Us.jns_sbb_cr,
                                 gl_jns_cr_2: "2",
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.On_Us.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.On_Us.jns_sbb_db,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.On_Us.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.On_Us.jns_sbb_cr,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         } else if (keterangan == "issuer") {
                             issuer = {
                                 gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_db,
                                 gl_jns_db_1: nosbb.no_pokok.On_Us.jns_sbb_db,
                                 gl_amount_db_1: amount,
-                                gl_rek_db_2: nosbb.no_fee.On_Us.nosbb_db,
-                                gl_jns_db_2: nosbb.no_fee.On_Us.jns_sbb_db,
-                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_1: nosbb.tagihan.nosbb_cr,
                                 gl_jns_cr_1: nosbb.tagihan.jns_sbb_cr,
                                 gl_amount_cr_1: amount,
+                                gl_rek_db_2: nosbb.no_fee.On_Us.nosbb_db,
+                                gl_jns_db_2: nosbb.no_fee.On_Us.jns_sbb_db,
+                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_2: nosbb.tagihan.nosbb_cr,
                                 gl_jns_cr_2: nosbb.tagihan.jns_sbb_cr,
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         } else if (keterangan == "acquirer") {
                             acquirer = {
                                 gl_rek_db_1: nosbb.no_pokok.Acquirer.nosbb_db,
                                 gl_jns_db_1: nosbb.no_pokok.Acquirer.jns_sbb_db,
                                 gl_amount_db_1: amount,
+                                gl_rek_cr_1: nosbb.no_pokok.Acquirer.nosbb_cr,
+                                gl_jns_cr_1: "2",
+                                gl_amount_cr_1: amount,
                                 gl_rek_db_2: nosbb.no_pokok.Acquirer.nosbb_db,
                                 gl_jns_db_2: nosbb.no_pokok.Acquirer.jns_sbb_db,
                                 gl_amount_db_2: trans_fee,
-                                gl_rek_cr_1: nosbb.no_pokok.Acquirer.nosbb_cr,
-                                // gl_jns_cr_1: nosbb.no_pokok.Acquirer.jns_sbb_cr,
-                                gl_jns_cr_1: "2",
-                                gl_amount_cr_1: amount,
                                 gl_rek_cr_2: nosbb.no_fee.Acquirer.nosbb_cr,
-                                // gl_jns_cr_2: nosbb.no_fee.Acquirer.jns_sbb_cr,
                                 gl_jns_cr_2: "2",
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.Acquirer.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.Acquirer.jns_sbb_db,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.Acquirer.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.Acquirer.jns_sbb_cr,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         }
                         // const data_gateway = {no_hp, bpr_id, no_rek:data_nasabah.data.nama_rek, trx_code, trx_type, amount, trans_fee, token, keterangan, terminal_id, lokasi, tgl_trans, tgl_transmis, rrn}
@@ -2268,15 +2330,21 @@ const withdrawal = async (req, res) => {
                             gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_cr,
                             gl_jns_db_1: nosbb.no_pokok.On_Us.jns_sbb_cr,
                             gl_amount_db_1: amount,
-                            gl_rek_db_2: nosbb.no_fee.On_Us.nosbb_cr,
-                            gl_jns_db_2: nosbb.no_fee.On_Us.jns_sbb_cr,
-                            gl_amount_db_2: trans_fee,
                             gl_rek_cr_1: nosbb.no_pokok.On_Us.nosbb_db,
                             gl_jns_cr_1: nosbb.no_pokok.On_Us.jns_sbb_db,
                             gl_amount_cr_1: amount,
+                            gl_rek_db_2: nosbb.no_fee.On_Us.nosbb_cr,
+                            gl_jns_db_2: nosbb.no_fee.On_Us.jns_sbb_cr,
+                            gl_amount_db_2: trans_fee,
                             gl_rek_cr_2: nosbb.no_fee.On_Us.nosbb_db,
                             gl_jns_cr_2: nosbb.no_fee.On_Us.jns_sbb_db,
                             gl_amount_cr_2: trans_fee,
+                            gl_rek_db_3: nosbb.fee_bpr.On_Us.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.On_Us.jns_sbb_cr,
+                            gl_amount_db_3: fee_bpr,
+                            gl_rek_cr_3: nosbb.fee_bpr.On_Us.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.On_Us.jns_sbb_db,
+                            gl_amount_cr_3: fee_bpr,
                         }
                     } else if (keterangan == "issuer") {
                         issuer = {
@@ -2292,23 +2360,33 @@ const withdrawal = async (req, res) => {
                             gl_rek_cr_2: nosbb.no_fee.On_Us.nosbb_db,
                             gl_jns_cr_2: nosbb.no_fee.On_Us.jns_sbb_db,
                             gl_amount_cr_2: trans_fee,
+                            gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                            gl_amount_db_3: fee_bpr,
+                            gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                            gl_amount_cr_3: fee_bpr,
                         }
                     } else if (keterangan == "acquirer") {
                         acquirer = {
                             gl_rek_db_1: nosbb.no_pokok.Acquirer.nosbb_cr,
-                            // gl_jns_db_1: nosbb.no_pokok.Acquirer.jns_sbb_cr,
                             gl_jns_db_1: "2",
                             gl_amount_db_1: amount,
-                            gl_rek_db_2: nosbb.no_fee.Acquirer.nosbb_cr,
-                            // gl_jns_db_2: nosbb.no_fee.Acquirer.jns_sbb_cr,
-                            gl_jns_db_2: "2",
-                            gl_amount_db_2: trans_fee,
                             gl_rek_cr_1: nosbb.no_pokok.Acquirer.nosbb_db,
                             gl_jns_cr_1: nosbb.no_pokok.Acquirer.jns_sbb_db,
                             gl_amount_cr_1: amount,
+                            gl_rek_db_2: nosbb.no_fee.Acquirer.nosbb_cr,
+                            gl_jns_db_2: "2",
+                            gl_amount_db_2: trans_fee,
                             gl_rek_cr_2: nosbb.no_pokok.Acquirer.nosbb_db,
                             gl_jns_cr_2: nosbb.no_pokok.Acquirer.jns_sbb_db,
                             gl_amount_cr_2: trans_fee,
+                            gl_rek_db_3: nosbb.fee_bpr.Acquirer.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.Acquirer.jns_sbb_cr,
+                            gl_amount_db_3: fee_bpr,
+                            gl_rek_cr_3: nosbb.fee_bpr.Acquirer.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.Acquirer.jns_sbb_db,
+                            gl_amount_cr_3: fee_bpr,
                         }
                     }
                     // const data_gateway = {no_hp, bpr_id, no_rek:data_nasabah.data.nama_rek, trx_code, trx_type, amount, trans_fee, token, keterangan, terminal_id, lokasi, tgl_trans, tgl_transmis, rrn}
@@ -2570,15 +2648,21 @@ const ppob = async (req, res) => {
                                     gl_rek_db_1: no_rek,
                                     gl_jns_db_1: "2",
                                     gl_amount_db_1: amount,
-                                    gl_rek_db_2: no_rek,
-                                    gl_jns_db_2: "2",
-                                    gl_amount_db_2: trans_fee,
                                     gl_rek_cr_1: nosbb.no_pokok.nosbb_cr,
                                     gl_jns_cr_1: nosbb.no_pokok.jns_sbb_cr,
                                     gl_amount_cr_1: amount,
+                                    gl_rek_db_2: no_rek,
+                                    gl_jns_db_2: "2",
+                                    gl_amount_db_2: trans_fee,
                                     gl_rek_cr_2: nosbb.no_fee.nosbb_cr,
                                     gl_jns_cr_2: nosbb.no_fee.jns_sbb_cr,
                                     gl_amount_cr_2: trans_fee,
+                                    gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                    gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                    gl_amount_db_3: fee_bpr,
+                                    gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                    gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                    gl_amount_cr_3: fee_bpr,
                                 }
                             }
                             const request = await connect_axios(url_core, 'CORE', "ppob", data_core)
@@ -2666,15 +2750,21 @@ const ppob = async (req, res) => {
                                 gl_rek_db_1: nosbb.no_pokok.nosbb_cr,
                                 gl_jns_db_1: nosbb.no_pokok.jns_sbb_cr,
                                 gl_amount_db_1: amount,
-                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
-                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
-                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_1: no_rek,
                                 gl_jns_cr_1: "2",
                                 gl_amount_cr_1: amount,
+                                gl_rek_db_2: nosbb.no_fee.nosbb_cr,
+                                gl_jns_db_2: nosbb.no_fee.jns_sbb_cr,
+                                gl_amount_db_2: trans_fee,
                                 gl_rek_cr_2: no_rek,
                                 gl_jns_cr_2: "2",
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         }
                         if (status_core[0].status == "0") {
