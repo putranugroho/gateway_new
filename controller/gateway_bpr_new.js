@@ -2972,10 +2972,86 @@ const sign_in_off = async (req, res) => {
     }
 }
 
+const list_log_gateway = async (req, res) => {
+    let {no_hp, tgl_start, tgl_end} = req.body;
+    try {
+        let res_send
+        let response = await db.sequelize.query(
+            `SELECT * FROM log_gateway WHERE no_hp = ? AND tgl_trans BETWEEN ? AND ?`,
+            {
+                replacements: [no_hp, tgl_start, tgl_end],
+                type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+        if (!response.length) {
+            res_send = {
+                code: "002",
+                status: "Failed",
+                message: "Gagal Mencari Log Gateway",
+                data: null,
+            }
+            console.log(res_send);
+            res.status(200).send(res_send);
+        } else {
+            res_send = {
+                code: "000",
+                status: "ok",
+                message: "Success",
+                data: response,
+            }
+            console.log(res_send);
+            res.status(200).send(res_send);
+        }
+    } catch (error) {
+      //--error server--//
+      console.log("erro get product", error);
+      res.send(error);
+    }
+};
+
+const list_log_core = async (req, res) => {
+    let {nosbb, bpr_id, trx_code, tgl_start, tgl_end} = req.body;
+    try {
+        let res_send
+        let response = await db.sequelize.query(
+            `SELECT * FROM log_core WHERE nosbb = ? AND bpr_id = ? AND trx_code = ?`,
+            {
+                replacements: [nosbb, bpr_id, trx_code],
+                type: db.sequelize.QueryTypes.SELECT,
+            }
+        );
+        if (!response.length) {
+            res_send = {
+                code: "002",
+                status: "Failed",
+                message: "Gagal Mencari Log Core",
+                data: null,
+            }
+            console.log(res_send);
+            res.status(200).send(res_send);
+        } else {
+            res_send = {
+                code: "000",
+                status: "ok",
+                message: "Success",
+                data: response,
+            }
+            console.log(res_send);
+            res.status(200).send(res_send);
+        }
+    } catch (error) {
+      //--error server--//
+      console.log("erro get product", error);
+      res.send(error);
+    }
+};
+
 module.exports = {
     inquiry_account,
     transfer,
     withdrawal,
     ppob,
-    sign_in_off
+    sign_in_off,
+    list_log_gateway,
+    list_log_core
 };
