@@ -4,8 +4,9 @@ const { validateApiKey } = require('../../utils/validateApiKey');
 const { printreq, printres } = require('../../utils/getprint');
 const Validator = require('fastest-validator');
 const { transaksi_ppob } = require('../ppob/transaksi_ppob');
+const { insertlogGW } = require('./insertlogcms');
 const v = new Validator();
-const { URL_CMS, API_KEY_CMS } = process.env
+const { CMS_URL, API_KEY_CMS } = process.env
 
 router.post('/transppob', validateApiKey, async (req, res) => {
     let response = {}
@@ -34,10 +35,15 @@ router.post('/transppob', validateApiKey, async (req, res) => {
         });
     }
 
-    const { trx_code } = req.body
+    const { trx_code, norek, bpr_id, tgl_trans, noreff } = req.body
     if (trx_code === '5000') {
         printreq(req.body, 'TRANSAKSI PPOB')
         response = await transaksi_ppob(req.body)
+        datalog = {
+            request: req.body,
+            response
+        }
+        insertlogGW(bpr_id, tgl_trans, norek, noreff, datalog)
         printres(response, 'TRANSAKSI PPOB')
     } else {
         response = {

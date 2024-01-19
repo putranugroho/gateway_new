@@ -5,7 +5,7 @@ const { printreq, printres } = require('../../utils/getprint');
 const { callAPI } = require('../../utils/execAPI')
 const Validator = require('fastest-validator');
 const v = new Validator();
-const { URL_CMS, API_KEY_CMS } = process.env
+const { CMS_URL, API_KEY_CMS } = process.env
 
 router.post('/updatests', validateApiKey, async (req, res) => {
     let response = {}
@@ -13,7 +13,7 @@ router.post('/updatests', validateApiKey, async (req, res) => {
         "api-key": API_KEY_CMS
     }
     printreq(req.body, "UPDATE STATUS MPIN");
-    response = await callAPI(URL_CMS, "gw/mpin/updatests", req.body, header)
+    response = await callAPI(CMS_URL, "gw/mpin/updatests", req.body, header)
     printres(response, "UPDATE STATUS MPIN");
     res.status(200).send(response);
 });
@@ -25,7 +25,7 @@ router.post('/updatempin', validateApiKey, async (req, res) => {
         "api-key": API_KEY_CMS
     }
     printreq(req.body, "UPDATE STATUS MPIN");
-    response = await callAPI(URL_CMS, "gw/mpin/updatempin", req.body, header)
+    response = await callAPI(CMS_URL, "gw/mpin/updatempin", req.body, header)
     printres(response, "UPDATE STATUS MPIN");
     res.status(200).send(response);
 });
@@ -37,7 +37,7 @@ router.post('/updatempincetak', validateApiKey, async (req, res) => {
         "api-key": API_KEY_CMS
     }
     printreq(req.body, "UPDATE STATUS MPIN");
-    response = await callAPI(URL_CMS, "gw/mpin/updatempincetak", req.body, header)
+    response = await callAPI(CMS_URL, "gw/mpin/updatempincetak", req.body, header)
     printres(response, "UPDATE STATUS MPIN");
     res.status(200).send(response);
 });

@@ -10,4 +10,16 @@ async function insertLog(req, noreff, bpr_id) {
         replacements: [bpr_id, format(currentdate, "yyyy-MM-dd HH:mm:ss"), JSON.stringify(req), noreff]
     })
 }
-module.exports = { insertLog };
+
+async function insertlogGW(bpr_id, tgl_trans, no_rek, rrn, data) {
+    sqlquery = `insert into log_ppob
+                (bpr_id,                    tgl_trans,                      no_rek, 
+                rrn,                        data) 
+                values 
+                (?,                         ?,                      ?,
+                ?,                          ?)`
+    db.sequelize.query(sqlquery, {
+        replacements: [bpr_id, tgl_trans, no_rek, rrn, JSON.stringify(data)]
+    })
+}
+module.exports = { insertLog, insertlogGW };

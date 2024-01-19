@@ -6,6 +6,7 @@ const axios = require('axios');
 const { callAPI } = require('../../utils/execAPI');
 const { split_sbb } = require("../../utils/splitgltrn");
 const moment = require("moment");
+const { insertlogGW } = require("../cms/insertlogcms");
 
 async function transaksi_ppob(req) {
     let {
@@ -28,7 +29,7 @@ async function transaksi_ppob(req) {
     let no_rek = norek
     let trans_fee = fee
     let rrn = noreff
-    const { CORE_URL, URL_CMS, API_KEY_CMS } = process.env;
+    const { CORE_URL, CMS_URL, API_KEY_CMS } = process.env;
     const url = CORE_URL;
     let responseApi
     let dataAPI = {}
@@ -46,7 +47,7 @@ async function transaksi_ppob(req) {
     try {
 
 
-        responseApi = await callAPI(URL_CMS, "gw/inq/validatenorekhp", data, header)
+        responseApi = await callAPI(CMS_URL, "gw/inq/validatenorekhp", data, header)
 
         let kode = responseApi.code
         if (kode == "000") {
@@ -82,7 +83,7 @@ async function transaksi_ppob(req) {
                                 status: "2",
                                 mpin_salah: mpinsalah
                             }
-                            responseApi = await callAPI(URL_CMS, "gw/mpin/updatests", dataAPIbody, header)
+                            responseApi = await callAPI(CMS_URL, "gw/mpin/updatests", dataAPIbody, header)
                             if (responseApi.code == "000") {
                                 response = {
                                     code: "007",
@@ -101,7 +102,7 @@ async function transaksi_ppob(req) {
                                 status: "1",
                                 mpin_salah: mpinsalah
                             }
-                            responseApi = await callAPI(URL_CMS, "gw/mpin/updatests", dataAPIbody, header)
+                            responseApi = await callAPI(CMS_URL, "gw/mpin/updatests", dataAPIbody, header)
                             if (responseApi.code == "000") {
                                 response = {
                                     code: "007",
@@ -121,7 +122,7 @@ async function transaksi_ppob(req) {
                             status: "1",
                             mpin_salah: "0"
                         }
-                        responseApi = await callAPI(URL_CMS, "gw/mpin/updatests", dataAPIbody, header)
+                        responseApi = await callAPI(CMS_URL, "gw/mpin/updatests", dataAPIbody, header)
                         if (responseApi.code !== "000") {
                             response = responseApi
                             return response
@@ -132,7 +133,7 @@ async function transaksi_ppob(req) {
                             bpr_id: bpr_id,
                             acct_type: dataAPI.acct_type
                         }
-                        responseApi = await callAPI(URL_CMS, "gw/inq/ceklimit", dataAPIbody, header)
+                        responseApi = await callAPI(CMS_URL, "gw/inq/ceklimit", dataAPIbody, header)
                         if (responseApi.code !== "000") {
                             response = responseApi
                             return response
@@ -157,7 +158,7 @@ async function transaksi_ppob(req) {
                             bpr_id: bpr_id,
                             tcode: trx_code
                         }
-                        responseApi = await callAPI(URL_CMS, "gw/gl/sbbgltrans", dataAPIbody, header)
+                        responseApi = await callAPI(CMS_URL, "gw/gl/sbbgltrans", dataAPIbody, header)
                         if (responseApi.code !== "000") {
                             response = {
                                 code: "011",
@@ -253,7 +254,11 @@ async function transaksi_ppob(req) {
                             }
                         }
                         console.log(data_core)
+
+
                         response = await callAPI(url, "ppob", data_core, header)
+                        //        insertlogGW(nosbb.no_pokok.nosbb_cr, bpr_id, trx_code, trx_type, tgl_trans, product_name, no_rek, amount + fee + fee_bpr, 0, noreff, '1', response.code)
+
                         if (response.code == "000") {
                             dataAPIbody = {
                                 bpr_id,
@@ -263,9 +268,9 @@ async function transaksi_ppob(req) {
                                 no_hp: nohp
                             }
                             if (trx_type == "TRX") {
-                                callAPI(URL_CMS, "gw/update/ppobplus", dataAPIbody, header)
+                                callAPI(CMS_URL, "gw/update/ppobplus", dataAPIbody, header)
                             } else if (trx_type == "REV") {
-                                callAPI(URL_CMS, "gw/update/ppobmin", dataAPIbody, header)
+                                callAPI(CMS_URL, "gw/update/ppobmin", dataAPIbody, header)
                             }
                         }
                     }
