@@ -5,7 +5,7 @@ require('dotenv').config;
 const { URL_CMS } = process.env
 
 const useridrouter = require('../controller/cms/inquiry')
-const mpinrouter = require('../controller/cms/mpin')
+const mpinrouter = require('../controller/cms/mpin_trx')
 const glrouter = require('../controller/cms/gl')
 const logrouter = require('../controller/cms/logs')
 const updaterouter = require('../controller/cms/update')

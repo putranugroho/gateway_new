@@ -8,121 +8,15 @@ const { insertLog } = require('./insertlogcms');
 const v = new Validator();
 const { CMS_URL, API_KEY_CMS } = process.env
 
-router.post('/login', validateApiKey, async (req, res) => {
+router.post('/all', validateApiKey, async (req, res) => {
     let response = {}
     let header = {
         "api-key": API_KEY_CMS
     }
     var { noreff, bpr_id } = req.body
-    printreq(req.body, "login");
-    response = await callAPI(CMS_URL, "userid/login", req.body, header)
-    printres(response, "login");
-    var log = {
-        request: req.body,
-        response
-    }
-    if (typeof noreff === 'undefined') {
-        noreff = ''
-    }
-
-    if (typeof bpr_id === 'undefined') {
-        bpr_id = ''
-    }
-
-    insertLog(log, noreff, bpr_id)
-    res.status(200).send(response);
-});
-
-
-router.post('/logout', validateApiKey, async (req, res) => {
-    let response = {}
-    let header = {
-        "api-key": API_KEY_CMS
-    }
-    printreq(req.body, "Logout");
-    response = await callAPI(CMS_URL, "userid/updatests", req.body, header)
-    printres(response, "Logout");
-
-    var log = {
-        request: req.body,
-        response
-    }
-    if (typeof noreff === 'undefined') {
-        noreff = ''
-    }
-
-    if (typeof bpr_id === 'undefined') {
-        bpr_id = ''
-    }
-
-    insertLog(log, noreff, bpr_id)
-    res.status(200).send(response);
-});
-
-
-
-router.post('/mastermenu', validateApiKey, async (req, res) => {
-    let response = {}
-    let header = {
-        "api-key": API_KEY_CMS
-    }
-    printreq(req.body, "GET ALL MASTER FASILITAS");
-    response = await callAPI(CMS_URL, "fasilitas-akses", req.body, header)
-    printres(response, "GET ALL MASTER FASILITAS");
-
-    var log = {
-        request: req.body,
-        response
-    }
-    if (typeof noreff === 'undefined') {
-        noreff = ''
-    }
-
-    if (typeof bpr_id === 'undefined') {
-        bpr_id = ''
-    }
-
-    insertLog(log, noreff, bpr_id)
-    res.status(200).send(response);
-});
-
-
-
-router.post('/fasilitasakses', validateApiKey, async (req, res) => {
-    let response = {}
-    let header = {
-        "api-key": API_KEY_CMS
-    }
-    printreq(req.body, "GET FASILITAS AKSES BY USER");
-    response = await callAPI(CMS_URL, "fasilitas-akses/byuser", req.body, header)
-    printres(response, "GET FASILITAS AKSES BY USER");
-
-    var log = {
-        request: req.body,
-        response
-    }
-    if (typeof noreff === 'undefined') {
-        noreff = ''
-    }
-
-    if (typeof bpr_id === 'undefined') {
-        bpr_id = ''
-    }
-
-    insertLog(log, noreff, bpr_id)
-    res.status(200).send(response);
-});
-
-
-router.post('/listalluser', validateApiKey, async (req, res) => {
-    let response = {}
-    let header = {
-        "api-key": API_KEY_CMS
-    }
-    printreq(req.body, "GET LIST ALL USER ID");
-    response = await callAPI(CMS_URL, "userid", req.body, header)
-    printres(response, "GET LIST ALL USER ID");
-
+    printreq(req.body, "CARI SEMUA AKUN");
+    response = await callAPI(CMS_URL, "akun", req.body, header)
+    printres(response, "CARI SEMUA AKUN");
     var log = {
         request: req.body,
         response
@@ -145,36 +39,10 @@ router.post('/byname', validateApiKey, async (req, res) => {
     let header = {
         "api-key": API_KEY_CMS
     }
-    printreq(req.body, "GET LIST USER ID BY NAME");
-    response = await callAPI(CMS_URL, "userid/byname", req.body, header)
-    printres(response, "GET LIST USER ID BY NAME");
-
-    var log = {
-        request: req.body,
-        response
-    }
-    if (typeof noreff === 'undefined') {
-        noreff = ''
-    }
-
-    if (typeof bpr_id === 'undefined') {
-        bpr_id = ''
-    }
-
-    insertLog(log, noreff, bpr_id)
-    res.status(200).send(response);
-});
-
-
-router.post('/byuserid', validateApiKey, async (req, res) => {
-    let response = {}
-    let header = {
-        "api-key": API_KEY_CMS
-    }
-    printreq(req.body, "GET LIST USER ID BY USERID");
-    response = await callAPI(CMS_URL, "userid/byuser", req.body, header)
-    printres(response, "GET LIST USER ID BY USERID");
-
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "CARI AKUN BY NAME");
+    response = await callAPI(CMS_URL, "akun/byname", req.body, header)
+    printres(response, "CARI AKUN BY NAME");
     var log = {
         request: req.body,
         response
@@ -197,10 +65,10 @@ router.post('/add', validateApiKey, async (req, res) => {
     let header = {
         "api-key": API_KEY_CMS
     }
-    printreq(req.body, "INSERT USER ID");
-    response = await callAPI(CMS_URL, "userid/insert", req.body, header)
-    printres(response, "INSERT USER ID");
-
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "INSERT AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/insert", req.body, header)
+    printres(response, "INSERT AKUN IBPR");
     var log = {
         request: req.body,
         response
@@ -218,4 +86,134 @@ router.post('/add', validateApiKey, async (req, res) => {
 });
 
 
+
+router.post('/chg', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "CHANGE AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/update", req.body, header)
+    printres(response, "CHANGE AKUN IBPR");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+
+router.post('/del', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "DELETE AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/delete", req.body, header)
+    printres(response, "DELETE AKUN IBPR");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/close', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "CLOSE AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/close", req.body, header)
+    printres(response, "CLOSE AKUN IBPR");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/blokir', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "BLOKIR AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/blokir", req.body, header)
+    printres(response, "BLOKIR AKUN IBPR");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/unblokir', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "BUKA BLOKIR AKUN IBPR");
+    response = await callAPI(CMS_URL, "akun/unblokir", req.body, header)
+    printres(response, "BUKA BLOKIR AKUN IBPR");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
 module.exports = router
