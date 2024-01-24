@@ -13,7 +13,8 @@ router.get('/', validateApiKey, async (req, res) => {
 
 
 const mobileRouter = require('../controller/collme_mobile/mobilerouter')
-
+const cisRouter = require('../controller/collme_cis/cisrouter')
 router.use('/mobile', mobileRouter)
+router.use('/cis', cisRouter)
 
 module.exports = router

@@ -6,7 +6,7 @@ require('dotenv').config();
 const { URL_COLLME } = process.env;
 
 async function inquiry(req) {
-    const { trx_code, bpr_id, nohp, noreff, tgl_trans } = req;
+    const { trx_code, bpr_id, noreff, tgl_trans } = req;
     console.log(tgl_trans);
 
     const trxMessages = {
@@ -39,8 +39,11 @@ async function inquiry(req) {
 
         printreq(req, trxMessages[trx_code]);
         printres(req, trxMessages[trx_code]);
-
+        var nohp
         const datalog = { Request: req, Response: response };
+        if (typeof nohp == 'undefined') {
+            nohp = '';
+        }
         insertlog(nohp, bpr_id, timestampString, noreff, JSON.stringify(datalog));
     } else {
         response = {
