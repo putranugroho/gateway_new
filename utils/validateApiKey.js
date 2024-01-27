@@ -1,7 +1,6 @@
 require('dotenv').config;
 async function validateApiKey(req, res, next) {
     const apiKey = req.headers['api-key'];
-    console.log(req.headers);
     if (apiKey !== process.env.API_KEY) {
         return res.status(401).json({ error: 'you not authorized to use this service' });
     }

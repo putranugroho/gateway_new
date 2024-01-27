@@ -2,7 +2,6 @@ const axios = require('axios');
 
 async function callAPI(url, route, data, headers = {}) {
     try {
-        console.log(`${url}${route}`);
         const response = await axios({
             method: 'post',
             url: `${url}${route}`,
