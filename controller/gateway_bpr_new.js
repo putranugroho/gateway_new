@@ -1772,7 +1772,7 @@ const withdrawal = async (req, res) => {
             let res_send
             console.log("CREATE TOKEN");
             let data_acct = { bpr_id, no_hp, no_rek }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_acct)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/acct', data_acct)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -1805,12 +1805,12 @@ const withdrawal = async (req, res) => {
                 } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
 
                     let data_status_mpin = { status: request_acct.data.status, mpin_salah: "0", no_rek, no_hp, bpr_id }
-                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                     console.log("update status mpin");
                     console.log(update_status_mpin);
 
                     let data_limit = { bpr_id, acct_type: request_acct.data.acct_type }
-                    let check_limit = await connect_axios(url_cms, 'CMS', 'trx/inquiry/limitacctype', data_limit)
+                    let check_limit = await connect_axios(url_cms, 'CMS', 'gw/inq/ceklimit', data_limit)
                     if (check_limit.code !== "000" && check_limit.data === null) {
                         console.log(check_limit);
                         res.status(200).send(check_limit);
@@ -1846,7 +1846,7 @@ const withdrawal = async (req, res) => {
                                     res.status(200).send(res_send);
                                 } else {
                                     let data_sbb = { bpr_id, tcode: trx_code }
-                                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                                         console.log(get_nosbb);
                                         res.status(200).send(get_nosbb);
@@ -1891,7 +1891,7 @@ const withdrawal = async (req, res) => {
                                             }
                                         }
                                         let data_status_core = { bpr_id }
-                                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                                        let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                                         if (status_core.data.status == "0") {
                                             res_send = {
                                                 code: "099",
@@ -1938,7 +1938,7 @@ const withdrawal = async (req, res) => {
                                                 )
 
                                                 let data_tarik_tunai = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                                let request_tartun_plus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunplus', data_tarik_tunai)
+                                                let request_tartun_plus = await connect_axios(url_cms, 'CMS', 'gw/update/tartunplus', data_tarik_tunai)
                                                 console.log("Tambah Tartun Harian");
                                                 console.log(request_tartun_plus);
 
@@ -1959,7 +1959,7 @@ const withdrawal = async (req, res) => {
                             }
                         } else if (trx_type === "REV") {
                             let data_sbb = { bpr_id, tcode: trx_code }
-                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                                 console.log(get_nosbb);
                                 res.status(200).send(get_nosbb);
@@ -2004,10 +2004,10 @@ const withdrawal = async (req, res) => {
                                     }
                                 }
                                 let data_status_core = { bpr_id }
-                                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                                let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                                 if (status_core.data.status == "0") {
                                     let data_hold_trans = { bpr_id, data: JSON.stringify(data_core) }
-                                    let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                    let hold_transaction = await connect_axios(url_cms, 'CMS', 'gw/log/holdtransaction', data_hold_trans)
                                     console.log("hold transaction");
                                     console.log(hold_transaction);
 
@@ -2056,7 +2056,7 @@ const withdrawal = async (req, res) => {
                                         )
 
                                         let data_tarik_tunai = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                        let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                        let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'gw/update/tartunmin', data_tarik_tunai)
                                         console.log("Kurang Tartun Harian");
                                         console.log(request_tartun_minus);
 
@@ -2079,7 +2079,7 @@ const withdrawal = async (req, res) => {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
                         let data_status_mpin = { status: "2", mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -2096,7 +2096,7 @@ const withdrawal = async (req, res) => {
                         }
                     } else {
                         let data_status_mpin = { status: request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -2122,7 +2122,7 @@ const withdrawal = async (req, res) => {
                 jurnal_bpr = bpr_id
             }
             let data_sbb = { bpr_id, tcode: "1100" }
-            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+            let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                 console.log(get_nosbb);
                 res.status(200).send(get_nosbb);
@@ -2132,7 +2132,7 @@ const withdrawal = async (req, res) => {
                 if (trx_type === "TRX") {
                     console.log("TARIK TUNAI ATM TRX");
                     let data_status_core = { bpr_id }
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                     if (status_core.data.status == "0") {
                         res_send = {
                             code: "099",
@@ -2422,11 +2422,11 @@ const withdrawal = async (req, res) => {
                         }
                     }
                     let data_status_core = { bpr_id }
-                    let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                    let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                     if (status_core.data.status == "0") {
 
                         let data_hold_trans = { bpr_id, data: JSON.stringify(data_core) }
-                        let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                        let hold_transaction = await connect_axios(url_cms, 'CMS', 'gw/log/holdtransaction', data_hold_trans)
                         console.log("hold transaction");
                         console.log(hold_transaction);
 
@@ -2478,7 +2478,7 @@ const withdrawal = async (req, res) => {
                                 )
 
                                 let data_tarik_tunai = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'gw/update/tartunmin', data_tarik_tunai)
                                 console.log("Kurang Tartun Harian");
                                 console.log(request_tartun_minus);
 
@@ -2537,7 +2537,7 @@ const withdrawal = async (req, res) => {
                                 await update_gl_oy_db_cr(data_db, data_cr, detail_trans)
 
                                 let data_tarik_tunai = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'trx/update/tartunmin', data_tarik_tunai)
+                                let request_tartun_minus = await connect_axios(url_cms, 'CMS', 'gw/update/tartunmin', data_tarik_tunai)
                                 console.log("Kurang Tartun Harian");
                                 console.log(request_tartun_minus);
 
