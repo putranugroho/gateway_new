@@ -481,6 +481,7 @@ const inquiry_account = async (req, res) => {
         if (trx_code == "0100") {
             console.log("REQ INQUIRY ACCOUNT");
             let data_cms = { bpr_id, no_hp, no_rek }
+            console.log(data_cms);
             let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
