@@ -517,7 +517,7 @@ const inquiry_account = async (req, res) => {
         } else if (trx_code == "0300") {
             console.log("REQ SALDO GL");
             let data_cms = { bpr_id }
-            let request_gl = await connect_axios(url_cms, 'CMS', 'trx/gl/glkdacct', data_cms)
+            let request_gl = await connect_axios(url_cms, 'CMS', 'gw/gl/kdacc', data_cms)
             if (request_gl.code !== "000" && request_gl.data === null) {
                 console.log(request_gl);
                 res.status(200).send(request_gl);
@@ -629,7 +629,7 @@ const inquiry_account = async (req, res) => {
         } else if (trx_code == "0500") {
             console.log("REQ VALIDATE NO_HP");
             let data_cms = { bpr_id, no_hp }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatenohp', data_cms)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/validatenohp', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -647,13 +647,13 @@ const inquiry_account = async (req, res) => {
         } else if (trx_code == "0600") {
             console.log("REQ UPDATE MPIN");
             let data_cms = { no_hp, no_rek }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatenorekhp', data_cms)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/validatenorekhp', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
             } else {
                 data_cms = { pin, no_hp, no_rek }
-                let update_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_cms)
+                let update_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_cms)
                 if (update_mpin.code !== "000" && update_mpin.data === null) {
                     console.log(update_mpin);
                     res.status(200).send(update_mpin);
@@ -672,7 +672,7 @@ const inquiry_account = async (req, res) => {
         } else if (trx_code == "0700") {
             console.log("REQ VALIDATE NO_HP AND NO_REK");
             let data_cms = { no_hp, no_rek }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatenorekhp', data_cms)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/validatenorekhp', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -702,7 +702,7 @@ const inquiry_account = async (req, res) => {
         } else if (trx_code == "0800") {
             console.log("REQ VALIDATE NO_KTP");
             let data_inq = { bpr_id, no_hp, no_rek, no_ktp }
-            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatekeeping', data_inq)
+            let inquiry_ktp = await connect_axios(url_cms, 'CMS', 'gw/inq/validatekeeping', data_inq)
             if (inquiry_ktp.code !== "000" && inquiry_ktp.data === null) {
                 console.log(inquiry_ktp);
                 res.status(200).send(inquiry_ktp);
@@ -720,7 +720,7 @@ const inquiry_account = async (req, res) => {
             console.log("REQ ACTIVATE ACCOUNT KEEPING");
             console.log("tanggal lahir, gender, email");
             let data_inq = { bpr_id, no_hp, no_rek, no_ktp }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/validatekeeping', data_inq)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/validatekeeping', data_inq)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -749,7 +749,7 @@ const inquiry_account = async (req, res) => {
                     res.status(200).send(res_send);
                 } else if (request_acct.data.mpin == pin) {
                     let data_status_mpin = { status, mpin_salah: "0", no_rek, no_hp, bpr_id }
-                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                    let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                     console.log("update status mpin");
                     console.log(update_status_mpin);
                     res_send = {
@@ -765,7 +765,7 @@ const inquiry_account = async (req, res) => {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
                         let data_status_mpin = { status: "2", mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -782,7 +782,7 @@ const inquiry_account = async (req, res) => {
                         }
                     } else {
                         let data_status_mpin = { status: request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -875,14 +875,14 @@ const transfer = async (req, res) => {
                     });
                 } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     let data_sbb = { bpr_id, tcode: trx_code }
-                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                         console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
                     } else {
                         if (trx_type === "TRX") {
                             let data_status_core = { bpr_id }
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                             if (status_core.data.status == "0") {
                                 res_send = {
                                     code: "099",
@@ -1061,7 +1061,7 @@ const transfer = async (req, res) => {
                                         )
 
                                         let data_transfer = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                        let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
+                                        let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'gw/update/trfplus', data_transfer)
                                         console.log("Tambah Transfer Harian");
                                         console.log(request_transfer_plus);
 
@@ -1123,11 +1123,11 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = { bpr_id }
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                             if (status_core.data.status == "0") {
 
                                 let data_hold_trans = { bpr_id, data: JSON.stringify(data_core) }
-                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'gw/log/holdtransaction', data_hold_trans)
                                 console.log("hold transaction");
                                 console.log(hold_transaction);
 
@@ -1175,7 +1175,7 @@ const transfer = async (req, res) => {
                                     )
 
                                     let data_transfer = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'trx/update/trfmin', data_transfer)
+                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'gw/update/trfmin', data_transfer)
                                     console.log("Kurang Transfer Harian");
                                     console.log(request_transfer_min);
 
@@ -1197,7 +1197,7 @@ const transfer = async (req, res) => {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
                         let data_status_mpin = { status: "2", mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -1214,7 +1214,7 @@ const transfer = async (req, res) => {
                         }
                     } else {
                         let data_status_mpin = { status: request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -1235,7 +1235,7 @@ const transfer = async (req, res) => {
         } else if (trx_code == "2200") {
             if (trx_type == "TRX") {
                 let data_status_core = { bpr_id }
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1247,7 +1247,7 @@ const transfer = async (req, res) => {
                     res.status(200).send(res_send);
                 } else {
                     let data_sbb = { bpr_id: bank_tujuan, tcode: trx_code }
-                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                         console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
@@ -1349,7 +1349,7 @@ const transfer = async (req, res) => {
                 }
             } else if (trx_type == "REV") {
                 let data_status_core = { bpr_id }
-                let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                 if (status_core.data.status == "0") {
                     res_send = {
                         code: "099",
@@ -1361,7 +1361,7 @@ const transfer = async (req, res) => {
                     res.status(200).send(res_send);
                 } else {
                     let data_sbb = { bpr_id, tcode: trx_code }
-                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                    let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                         console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
@@ -1496,7 +1496,7 @@ const transfer = async (req, res) => {
                 } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     if (trx_type === "TRX") {
                         let data_status_core = { bpr_id }
-                        let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                        let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                         if (status_core.data.status == "0") {
                             res_send = {
                                 code: "099",
@@ -1508,7 +1508,7 @@ const transfer = async (req, res) => {
                             res.status(200).send(res_send);
                         } else {
                             let data_sbb = { bpr_id: bank_tujuan, tcode: trx_code }
-                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                            let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                                 console.log(get_nosbb);
                                 res.status(200).send(get_nosbb);
@@ -1567,7 +1567,7 @@ const transfer = async (req, res) => {
                                 } else {
 
                                     let data_transfer = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                    let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'trx/update/trfplus', data_transfer)
+                                    let request_transfer_plus = await connect_axios(url_cms, 'CMS', 'gw/update/trfplus', data_transfer)
                                     console.log("Tambah Transfer Harian");
                                     console.log(request_transfer_plus);
 
@@ -1586,7 +1586,7 @@ const transfer = async (req, res) => {
                         }
                     } else if (trx_type === "REV") {
                         let data_sbb = { bpr_id, tcode: trx_code }
-                        let get_nosbb = await connect_axios(url_cms, 'CMS', 'trx/gl/gltranssbb', data_sbb)
+                        let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
                         if (get_nosbb.code !== "000" && get_nosbb.data === null) {
                             console.log(get_nosbb);
                             res.status(200).send(get_nosbb);
@@ -1628,11 +1628,11 @@ const transfer = async (req, res) => {
                                 }
                             }
                             let data_status_core = { bpr_id }
-                            let status_core = await connect_axios(url_cms, 'CMS', 'trx/inquiry/stscore', data_status_core)
+                            let status_core = await connect_axios(url_cms, 'CMS', 'gw/inq/stscore', data_status_core)
                             if (status_core.data.status == "0") {
 
                                 let data_hold_trans = { bpr_id, data: JSON.stringify(data_core) }
-                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'trx/log/holdtrx', data_hold_trans)
+                                let hold_transaction = await connect_axios(url_cms, 'CMS', 'gw/log/holdtransaction', data_hold_trans)
                                 console.log("hold transaction");
                                 console.log(hold_transaction);
 
@@ -1658,7 +1658,7 @@ const transfer = async (req, res) => {
                                     res.status(200).send(request);
                                 } else {
                                     let data_transfer = { amount, trans_fee, no_rek, no_hp, bpr_id }
-                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'trx/update/trfmin', data_transfer)
+                                    let request_transfer_min = await connect_axios(url_cms, 'CMS', 'gw/update/trfmin', data_transfer)
                                     console.log("Kurang Transfer Harian");
                                     console.log(request_transfer_min);
 
@@ -1680,7 +1680,7 @@ const transfer = async (req, res) => {
                     mpin_salah = mpin_salah + 1
                     if (mpin_salah >= 3) {
                         let data_status_mpin = { status: "2", mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
@@ -1697,7 +1697,7 @@ const transfer = async (req, res) => {
                         }
                     } else {
                         let data_status_mpin = { status: request_acct.data.status, mpin_salah, no_rek, no_hp, bpr_id }
-                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'trx/mpin/updatests', data_status_mpin)
+                        let update_status_mpin = await connect_axios(url_cms, 'CMS', 'gw/mpin/updatests', data_status_mpin)
                         if (update_status_mpin.code !== "000" && update_status_mpin.data === null) {
                             console.log(update_status_mpin);
                             res.status(200).send(update_status_mpin);
