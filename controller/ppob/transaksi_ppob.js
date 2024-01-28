@@ -221,6 +221,7 @@ async function transaksi_ppob(req) {
                                 trx_type,
                                 amount: parseFloat(amount),
                                 trans_fee: parseFloat(fee),
+                                fee_bpr,
                                 product_name,
                                 token: "",
                                 acq_id: "",
