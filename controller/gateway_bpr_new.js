@@ -482,7 +482,7 @@ const inquiry_account = async (req, res) => {
             console.log("REQ INQUIRY ACCOUNT");
             let data_cms = { bpr_id, no_hp, no_rek }
             console.log(data_cms);
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_cms)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/acct', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -845,7 +845,7 @@ const transfer = async (req, res) => {
         );
         if (trx_code == "2100") {
             let data_cms = { bpr_id, no_hp, no_rek }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_cms)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/acct', data_cms)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
@@ -1465,7 +1465,7 @@ const transfer = async (req, res) => {
             }
         } else if (trx_code == "2300") {
             let data_acct = { bpr_id, no_hp, no_rek }
-            let request_acct = await connect_axios(url_cms, 'CMS', 'trx/inquiry/acct', data_acct)
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/acct', data_acct)
             if (request_acct.code !== "000" && request_acct.data === null) {
                 console.log(request_acct);
                 res.status(200).send(request_acct);
