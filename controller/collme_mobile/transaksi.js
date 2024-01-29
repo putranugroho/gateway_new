@@ -41,7 +41,7 @@ async function transaksi(req) {
         printres(req, trxMessages[trx_code]);
 
         const datalog = { Request: req, Response: response };
-        insertlog(nohp, bpr_id, timestampString, noreff, JSON.stringify(datalog));
+        insertlog(nohp, bpr_id, timestampString, noreff, JSON.stringify(datalog).replace(/'/g, ''));
     } else {
         response = {
             pcode: '000',
