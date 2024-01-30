@@ -9,7 +9,6 @@ const cmsrouter = require('./router/cms');
 const collmerouter = require('./router/collme');
 const transrouter = require('./router/transaksi');
 const gateway_bpr = require("./router/gateway_bpr");
-
 const { sequelize } = require("./connection");
 
 // sequelize
