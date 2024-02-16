@@ -59,4 +59,29 @@ router.post('/listgenerate', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/checkmpin', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "CEK MPIN");
+    response = await callAPI(CMS_URL, "mpin/checkmpin", req.body, header)
+    printres(response, "CEK MPIN");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
 module.exports = router
