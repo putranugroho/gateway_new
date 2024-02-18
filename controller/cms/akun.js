@@ -216,4 +216,56 @@ router.post('/unblokir', validateApiKey, async (req, res) => {
     insertLog(log, noreff, bpr_id)
     res.status(200).send(response);
 });
+
+router.post('/addcard', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { bpr_id } = req.body
+    printreq(req.body, "Tambah Kartu");
+    response = await callAPI(CMS_URL, "akun/addcard", req.body, header)
+    printres(response, "Tambah Kartu");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+router.post('/validatecard', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+
+    printreq(req.body, "VALIDATE CARD");
+    response = await callAPI(CMS_URL, "inquiry/validatecard", req.body, header)
+    printres(response, "VALIDATE CARD");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
 module.exports = router
