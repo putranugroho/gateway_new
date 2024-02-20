@@ -4,6 +4,9 @@ async function insertlog(nohp, bpr_id, timestamp, noreff, data) {
     if (typeof noreff == 'undefined') {
         noreff = ''
     }
+    if (typeof nohp == 'undefined') {
+        nohp = ''
+    }
     const sqlquery = `INSERT INTO log_collme (nohp, bpr_id, timestamp, noreff, data) 
     VALUES (?, ?, ?, ?, ?)`;
 
