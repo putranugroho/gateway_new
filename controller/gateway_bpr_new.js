@@ -423,7 +423,7 @@ function split_sbb(data, tcode) {
                 if (data[i].jns_gl == "0") {
                     tagihan = data[i]
                 } else if (data[i].jns_gl == "2") {
-                    fee_bpr = data[i]
+                    fee_bpr['Issuer'] = data[i]
                 }
                 tagihan = data[i]
             } else if (data[i].ket_tcode == "Acquirer") {
@@ -2192,11 +2192,11 @@ const withdrawal = async (req, res) => {
                                 gl_rek_cr_2: nosbb.tagihan.nosbb_cr,
                                 gl_jns_cr_2: nosbb.tagihan.jns_sbb_cr,
                                 gl_amount_cr_2: trans_fee,
-                                gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
-                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_db,
                                 gl_amount_db_3: fee_bpr,
-                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
-                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_rek_cr_3: nosbb.fee_bpr.Issuer.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.Issuer.jns_sbb_cr,
                                 gl_amount_cr_3: fee_bpr,
                             }
                         } else if (keterangan == "acquirer") {
@@ -2384,11 +2384,11 @@ const withdrawal = async (req, res) => {
                             gl_rek_cr_2: nosbb.no_fee.On_Us.nosbb_db,
                             gl_jns_cr_2: nosbb.no_fee.On_Us.jns_sbb_db,
                             gl_amount_cr_2: trans_fee,
-                            gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
-                            gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                            gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_cr,
                             gl_amount_db_3: fee_bpr,
-                            gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
-                            gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                            gl_rek_cr_3: nosbb.fee_bpr.Issuer.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.Issuer.jns_sbb_db,
                             gl_amount_cr_3: fee_bpr,
                         }
                     } else if (keterangan == "acquirer") {
