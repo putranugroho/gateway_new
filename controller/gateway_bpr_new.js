@@ -445,10 +445,10 @@ function split_sbb(data, tcode) {
             }
         }
         console.log("return");
-        console.log(no_pokok,);
-        console.log(no_fee);
-        console.log(tagihan);
-        console.log(fee_bpr);
+        // console.log(no_pokok,);
+        // console.log(no_fee);
+        // console.log(tagihan);
+        // console.log(fee_bpr);
         return { no_pokok, no_fee, tagihan, fee_bpr }
     } else {
         for (let i = 0; i < data.length; i++) {
@@ -461,10 +461,10 @@ function split_sbb(data, tcode) {
             }
         }
         console.log("return");
-        console.log(no_pokok,);
-        console.log(no_fee);
-        console.log(tagihan);
-        console.log(fee_bpr);
+        // console.log(no_pokok,);
+        // console.log(no_fee);
+        // console.log(tagihan);
+        // console.log(fee_bpr);
         return { no_pokok, no_fee, tagihan, fee_bpr }
     }
 }
