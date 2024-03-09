@@ -444,7 +444,7 @@ function split_sbb(data, tcode) {
                 }
             }
         }
-        return { no_pokok, no_fee, tagihan }
+        return { no_pokok, no_fee, tagihan, fee_bpr }
     } else {
         for (let i = 0; i < data.length; i++) {
             if (data[i].jns_gl == "0") {
@@ -876,8 +876,8 @@ const transfer = async (req, res) => {
                 } else if ((request_acct.data.mpin == pin || trx_type === "REV") && request_acct.data.status == 1) {
                     let data_sbb = { bpr_id, tcode: trx_code }
                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                    console.log(get_nosbb);
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
                     } else {
                         if (trx_type === "TRX") {
@@ -1248,8 +1248,8 @@ const transfer = async (req, res) => {
                 } else {
                     let data_sbb = { bpr_id: bank_tujuan, tcode: trx_code }
                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                    console.log(get_nosbb);
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
                     } else {
                         let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -1362,8 +1362,8 @@ const transfer = async (req, res) => {
                 } else {
                     let data_sbb = { bpr_id, tcode: trx_code }
                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                    console.log(get_nosbb);
                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                        console.log(get_nosbb);
                         res.status(200).send(get_nosbb);
                     } else {
                         let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -1509,8 +1509,8 @@ const transfer = async (req, res) => {
                         } else {
                             let data_sbb = { bpr_id: bank_tujuan, tcode: trx_code }
                             let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                            console.log(get_nosbb);
                             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                console.log(get_nosbb);
                                 res.status(200).send(get_nosbb);
                             } else {
                                 let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -1587,8 +1587,8 @@ const transfer = async (req, res) => {
                     } else if (trx_type === "REV") {
                         let data_sbb = { bpr_id, tcode: trx_code }
                         let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                        console.log(get_nosbb);
                         if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                            console.log(get_nosbb);
                             res.status(200).send(get_nosbb);
                         } else {
                             let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -1854,8 +1854,8 @@ const withdrawal = async (req, res) => {
                                 } else {
                                     let data_sbb = { bpr_id, tcode: trx_code }
                                     let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                                    console.log(get_nosbb);
                                     if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                        console.log(get_nosbb);
                                         res.status(200).send(get_nosbb);
                                     } else {
                                         let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -1968,8 +1968,8 @@ const withdrawal = async (req, res) => {
                         } else if (trx_type === "REV") {
                             let data_sbb = { bpr_id, tcode: trx_code }
                             let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-                            console.log(get_nosbb);
                             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                                console.log(get_nosbb);
                                 res.status(200).send(get_nosbb);
                             } else {
                                 let nosbb = await split_sbb(get_nosbb.data, trx_code)
@@ -2132,8 +2132,8 @@ const withdrawal = async (req, res) => {
             }
             let data_sbb = { bpr_id, tcode: "1100" }
             let get_nosbb = await connect_axios(url_cms, 'CMS', 'gw/gl/sbbgltrans', data_sbb)
-            console.log(get_nosbb);
             if (get_nosbb.code !== "000" && get_nosbb.data === null) {
+                console.log(get_nosbb);
                 res.status(200).send(get_nosbb);
             } else {
                 let nosbb = await split_sbb(get_nosbb.data, "1100")
@@ -2152,7 +2152,6 @@ const withdrawal = async (req, res) => {
                         console.log(res_send);
                         res.status(200).send(res_send);
                     } else {
-                        console.log(nosbb);
                         if (keterangan == "on_us") {
                             on_us = {
                                 gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_db,
