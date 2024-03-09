@@ -2152,6 +2152,7 @@ const withdrawal = async (req, res) => {
                         console.log(res_send);
                         res.status(200).send(res_send);
                     } else {
+                        console.log(nosbb);
                         if (keterangan == "on_us") {
                             on_us = {
                                 gl_rek_db_1: nosbb.no_pokok.On_Us.nosbb_db,
