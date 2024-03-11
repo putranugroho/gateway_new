@@ -7,6 +7,7 @@ const { URL_COLLME } = process.env;
 
 async function transaksi(req) {
     const { trx_code, bpr_id, nohp, noreff, tgl_trans } = req;
+    console.log("🚀 ~ transaksi ~ req:", req)
     console.log(tgl_trans);
 
     const trxMessages = {
