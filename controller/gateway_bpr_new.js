@@ -423,7 +423,7 @@ function split_sbb(data, tcode) {
                 if (data[i].jns_gl == "0") {
                     tagihan = data[i]
                 } else if (data[i].jns_gl == "2") {
-                    fee_bpr = data[i]
+                    fee_bpr['Issuer'] = data[i]
                 }
                 tagihan = data[i]
             } else if (data[i].ket_tcode == "Acquirer") {
@@ -444,7 +444,12 @@ function split_sbb(data, tcode) {
                 }
             }
         }
-        return { no_pokok, no_fee, tagihan }
+        console.log("return");
+        // console.log(no_pokok,);
+        // console.log(no_fee);
+        // console.log(tagihan);
+        // console.log(fee_bpr);
+        return { no_pokok, no_fee, tagihan, fee_bpr }
     } else {
         for (let i = 0; i < data.length; i++) {
             if (data[i].jns_gl == "0") {
@@ -456,10 +461,10 @@ function split_sbb(data, tcode) {
             }
         }
         console.log("return");
-        console.log(no_pokok,);
-        console.log(no_fee);
-        console.log(tagihan);
-        console.log(fee_bpr);
+        // console.log(no_pokok,);
+        // console.log(no_fee);
+        // console.log(tagihan);
+        // console.log(fee_bpr);
         return { no_pokok, no_fee, tagihan, fee_bpr }
     }
 }
@@ -807,7 +812,7 @@ const inquiry_account = async (req, res) => {
         res.status(200).send({
             code: "099",
             status: "Failed",
-            message: "INVALID DATA!!!",
+            message: "INVALID REQ DATA TRANSACTION",
             data: error,
         })
     }
@@ -1722,7 +1727,7 @@ const transfer = async (req, res) => {
         res.status(200).send({
             code: "099",
             status: "Failed",
-            message: "INVALID DATA!!!",
+            message: "INVALID REQ DATA TRANSACTION",
             data: error,
         })
     }
@@ -2193,6 +2198,12 @@ const withdrawal = async (req, res) => {
                                 gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
                                 gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
                                 gl_amount_cr_3: 0,
+                                gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_db,
+                                gl_amount_db_3: fee_bpr,
+                                gl_rek_cr_3: nosbb.fee_bpr.Issuer.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.Issuer.jns_sbb_cr,
+                                gl_amount_cr_3: fee_bpr,
                             }
                         } else if (keterangan == "acquirer") {
                             acquirer = {
@@ -2385,6 +2396,12 @@ const withdrawal = async (req, res) => {
                             gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
                             gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
                             gl_amount_cr_3: 0,
+                            gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_cr,
+                            gl_amount_db_3: fee_bpr,
+                            gl_rek_cr_3: nosbb.fee_bpr.Issuer.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.Issuer.jns_sbb_db,
+                            gl_amount_cr_3: fee_bpr,
                         }
                     } else if (keterangan == "acquirer") {
                         acquirer = {
@@ -2574,7 +2591,7 @@ const withdrawal = async (req, res) => {
         res.status(200).send({
             code: "099",
             status: "Failed",
-            message: "INVALID DATA!!!",
+            message: "INVALID REQ DATA TRANSACTION",
             data: error,
         })
     }
