@@ -24,4 +24,11 @@ router.use('/transgl', transglRouter);
 router.use('/card', cardRouter);
 router.use('/transaksi', transaksiRouter);
 
+router.post('/', validateApiKey, async (req, res) => {
+    res.status(200).send("API CIS");
+});
+router.get('/', validateApiKey, async (req, res) => {
+    res.status(200).send("API CIS");
+});
+
 module.exports = router
