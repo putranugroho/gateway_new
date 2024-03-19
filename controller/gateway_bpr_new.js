@@ -2173,10 +2173,10 @@ const withdrawal = async (req, res) => {
                                 gl_amount_cr_2: trans_fee,
                                 gl_rek_db_3: nosbb.fee_bpr.On_Us.nosbb_db,
                                 gl_jns_db_3: nosbb.fee_bpr.On_Us.jns_sbb_db,
-                                gl_amount_db_3: fee_bpr,
+                                gl_amount_db_3: 0,
                                 gl_rek_cr_3: nosbb.fee_bpr.On_Us.nosbb_cr,
                                 gl_jns_cr_3: nosbb.fee_bpr.On_Us.jns_sbb_cr,
-                                gl_amount_cr_3: fee_bpr,
+                                gl_amount_cr_3: 0,
                             }
                         } else if (keterangan == "issuer") {
                             issuer = {
@@ -2192,6 +2192,12 @@ const withdrawal = async (req, res) => {
                                 gl_rek_cr_2: nosbb.tagihan.nosbb_cr,
                                 gl_jns_cr_2: nosbb.tagihan.jns_sbb_cr,
                                 gl_amount_cr_2: trans_fee,
+                                gl_rek_db_3: nosbb.fee_bpr.nosbb_db,
+                                gl_jns_db_3: nosbb.fee_bpr.jns_sbb_db,
+                                gl_amount_db_3: 0,
+                                gl_rek_cr_3: nosbb.fee_bpr.nosbb_cr,
+                                gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_cr,
+                                gl_amount_cr_3: 0,
                                 gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_db,
                                 gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_db,
                                 gl_amount_db_3: fee_bpr,
@@ -2215,10 +2221,10 @@ const withdrawal = async (req, res) => {
                                 gl_amount_cr_2: trans_fee,
                                 gl_rek_db_3: nosbb.fee_bpr.Acquirer.nosbb_db,
                                 gl_jns_db_3: nosbb.fee_bpr.Acquirer.jns_sbb_db,
-                                gl_amount_db_3: fee_bpr,
+                                gl_amount_db_3: 0,
                                 gl_rek_cr_3: nosbb.fee_bpr.Acquirer.nosbb_cr,
                                 gl_jns_cr_3: nosbb.fee_bpr.Acquirer.jns_sbb_cr,
-                                gl_amount_cr_3: fee_bpr,
+                                gl_amount_cr_3: 0,
                             }
                         }
                         // const data_gateway = {no_hp, bpr_id, no_rek:data_nasabah.data.nama_rek, trx_code, trx_type, amount, trans_fee, token, keterangan, terminal_id, lokasi, tgl_trans, tgl_transmis, rrn}
@@ -2365,10 +2371,10 @@ const withdrawal = async (req, res) => {
                             gl_amount_cr_2: trans_fee,
                             gl_rek_db_3: nosbb.fee_bpr.On_Us.nosbb_cr,
                             gl_jns_db_3: nosbb.fee_bpr.On_Us.jns_sbb_cr,
-                            gl_amount_db_3: fee_bpr,
+                            gl_amount_db_3: 0,
                             gl_rek_cr_3: nosbb.fee_bpr.On_Us.nosbb_db,
                             gl_jns_cr_3: nosbb.fee_bpr.On_Us.jns_sbb_db,
-                            gl_amount_cr_3: fee_bpr,
+                            gl_amount_cr_3: 0,
                         }
                     } else if (keterangan == "issuer") {
                         issuer = {
@@ -2384,6 +2390,12 @@ const withdrawal = async (req, res) => {
                             gl_rek_cr_2: nosbb.no_fee.On_Us.nosbb_db,
                             gl_jns_cr_2: nosbb.no_fee.On_Us.jns_sbb_db,
                             gl_amount_cr_2: trans_fee,
+                            gl_rek_db_3: nosbb.fee_bpr.nosbb_cr,
+                            gl_jns_db_3: nosbb.fee_bpr.jns_sbb_cr,
+                            gl_amount_db_3: 0,
+                            gl_rek_cr_3: nosbb.fee_bpr.nosbb_db,
+                            gl_jns_cr_3: nosbb.fee_bpr.jns_sbb_db,
+                            gl_amount_cr_3: 0,
                             gl_rek_db_3: nosbb.fee_bpr.Issuer.nosbb_cr,
                             gl_jns_db_3: nosbb.fee_bpr.Issuer.jns_sbb_cr,
                             gl_amount_db_3: fee_bpr,
@@ -2407,10 +2419,10 @@ const withdrawal = async (req, res) => {
                             gl_amount_cr_2: trans_fee,
                             gl_rek_db_3: nosbb.fee_bpr.Acquirer.nosbb_cr,
                             gl_jns_db_3: nosbb.fee_bpr.Acquirer.jns_sbb_cr,
-                            gl_amount_db_3: fee_bpr,
+                            gl_amount_db_3: 0,
                             gl_rek_cr_3: nosbb.fee_bpr.Acquirer.nosbb_db,
                             gl_jns_cr_3: nosbb.fee_bpr.Acquirer.jns_sbb_db,
-                            gl_amount_cr_3: fee_bpr,
+                            gl_amount_cr_3: 0,
                         }
                     }
                     // const data_gateway = {no_hp, bpr_id, no_rek:data_nasabah.data.nama_rek, trx_code, trx_type, amount, trans_fee, token, keterangan, terminal_id, lokasi, tgl_trans, tgl_transmis, rrn}
