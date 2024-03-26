@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 require('dotenv').config;
 const { validateApiKey } = require('../../../utils/validateApiKey');
+const { callAPI } = require('../../../utils/execAPI');
 
 const { URL_COLLME } = process.env
 var response
