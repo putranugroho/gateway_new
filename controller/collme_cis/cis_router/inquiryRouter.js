@@ -5,12 +5,12 @@ const { validateApiKey } = require('../../../utils/validateApiKey');
 const { insertLog } = require('../../cms/insertlogcms');
 const { printreq, printres } = require('../../../utils/getprint');
 const { callAPI } = require('../../../utils/execAPI');
-const { URL_COLLME } = process.env
+const { URL_COLLME, API_KEY_COLLME } = process.env
 
 router.post('/', validateApiKey, async (req, res) => {
     let response = {}
     let header = {
-        "api-key": API_KEY_CMS
+        "x-api-key": API_KEY_COLLME
     }
     var { noreff, bpr_id } = req.body
     printreq(req.body, "login");
