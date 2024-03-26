@@ -11,10 +11,6 @@ router.post('/master', validateApiKey, async (req, res) => {
     response = await callAPI(URL_COLLME, 'akses/master', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
     res.status(200).send(response);
 });
-router.post('/master', validateApiKey, async (req, res) => {
-    response = await callAPI(URL_COLLME, 'akses/master', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
-    res.status(200).send(response);
-});
 router.post('/userid', validateApiKey, async (req, res) => {
     response = await callAPI(URL_COLLME, 'akses/userid', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
     res.status(200).send(response);

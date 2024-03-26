@@ -17,6 +17,12 @@ router.post('/logout', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/login', validateApiKey, async (req, res) => {
+    response = await callAPI(URL_COLLME, 'userid/login', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
+    res.status(200).send(response);
+});
+
 router.post('/otorisasi', validateApiKey, async (req, res) => {
     response = await callAPI(URL_COLLME, 'userid/otorisasi', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
     res.status(200).send(response);
