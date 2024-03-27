@@ -218,4 +218,56 @@ router.post('/add', validateApiKey, async (req, res) => {
 });
 
 
+router.post('/chg', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    printreq(req.body, "UPDATE USER ID");
+    response = await callAPI(CMS_URL, "userid/update", req.body, header)
+    printres(response, "UPDATE USER ID");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/del', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    printreq(req.body, "DELETE USER ID");
+    response = await callAPI(CMS_URL, "userid/delete", req.body, header)
+    printres(response, "DELETE USER ID");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
 module.exports = router
