@@ -111,4 +111,56 @@ router.post('/delete', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/limitharian', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "acctype");
+    response = await callAPI(CMS_URL, "acctype/limitharian", req.body, header)
+    printres(response, "acctype");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/limitharian/insert', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "acctype");
+    response = await callAPI(CMS_URL, "acctype/limitharian/insert", req.body, header)
+    printres(response, "acctype");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
 module.exports = router
