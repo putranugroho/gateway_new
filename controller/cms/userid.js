@@ -270,4 +270,30 @@ router.post('/del', validateApiKey, async (req, res) => {
 });
 
 
+router.post('/chgpass', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    printreq(req.body, "GANTI PASSWORD USER ID");
+    response = await callAPI(CMS_URL, "userid/chgpass", req.body, header)
+    printres(response, "GANTI PASSWORD USER ID");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
 module.exports = router
