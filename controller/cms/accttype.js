@@ -118,9 +118,9 @@ router.post('/limitharian', validateApiKey, async (req, res) => {
         "api-key": API_KEY_CMS
     }
     var { noreff, bpr_id } = req.body
-    printreq(req.body, "acctype");
+    printreq(req.body, "limitharian");
     response = await callAPI(CMS_URL, "acctype/limitharian", req.body, header)
-    printres(response, "acctype");
+    printres(response, "limitharian");
     var log = {
         request: req.body,
         response
@@ -147,6 +147,58 @@ router.post('/limitharian/insert', validateApiKey, async (req, res) => {
     printreq(req.body, "acctype");
     response = await callAPI(CMS_URL, "acctype/limitharian/insert", req.body, header)
     printres(response, "acctype");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/limittrx', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "Limit Transaksi");
+    response = await callAPI(CMS_URL, "acctype/limittrx", req.body, header)
+    printres(response, "Limit transaksi");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/limittrx/insert', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "Limit Transaksi");
+    response = await callAPI(CMS_URL, "acctype/limittrx/insert", req.body, header)
+    printres(response, "Limit transaksi");
     var log = {
         request: req.body,
         response
