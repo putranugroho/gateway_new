@@ -84,4 +84,58 @@ router.post('/checkmpin', validateApiKey, async (req, res) => {
     insertLog(log, noreff, bpr_id)
     res.status(200).send(response);
 });
+
+
+router.post('/reset', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "RESET MPIN");
+    response = await callAPI(CMS_URL, "mpin/reset", req.body, header)
+    printres(response, "RESET MPIN");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/regenerate', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "REGENERATE MPIN");
+    response = await callAPI(CMS_URL, "mpin/regenerate", req.body, header)
+    printres(response, "REGENERATE MPIN");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
 module.exports = router

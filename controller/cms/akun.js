@@ -268,4 +268,86 @@ router.post('/validatecard', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/updateprint', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+
+    printreq(req.body, "UPDATE PRINT");
+    response = await callAPI(CMS_URL, "akun/updateprint", req.body, header)
+    printres(response, "UPDATE PRINT");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+
+router.post('/printakun', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+
+    printreq(req.body, "LIST PRINT AKUN");
+    response = await callAPI(CMS_URL, "akun/printakun", req.body, header)
+    printres(response, "LIST PRINT AKUN");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/printakunbyname', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+
+    printreq(req.body, "LIST PRINT AKUN BY NAME");
+    response = await callAPI(CMS_URL, "akun/printakunbyname", req.body, header)
+    printres(response, "LIST PRINT AKUN BY NAME");
+
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
 module.exports = router
