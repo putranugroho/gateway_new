@@ -4,6 +4,7 @@ const { validateApiKey } = require('../../utils/validateApiKey');
 const { printreq, printres } = require('../../utils/getprint');
 const { callAPI } = require('../../utils/execAPI')
 const Validator = require('fastest-validator');
+const { insertLog } = require('./insertlogcms');
 const v = new Validator();
 const { CMS_URL, API_KEY_CMS } = process.env
 
