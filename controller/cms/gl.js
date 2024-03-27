@@ -31,4 +31,83 @@ router.post('/gltranssbb', validateApiKey, async (req, res) => {
 });
 
 
+
+router.post('/mtcode', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "mtcode");
+    response = await callAPI(CMS_URL, "rekmtd/mtcode", req.body, header)
+    printres(response, "mtcode");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/gltrans', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "gltrans");
+    response = await callAPI(CMS_URL, "rekmtd/gltrans", req.body, header)
+    printres(response, "gltrans");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
+router.post('/gltransadd', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "gltrans");
+    response = await callAPI(CMS_URL, "rekmtd/gltrans/add", req.body, header)
+    printres(response, "gltrans");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
+
 module.exports = router

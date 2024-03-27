@@ -103,4 +103,30 @@ router.post('/stscore', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/rek', validateApiKey, async (req, res) => {
+    let response = {}
+    let header = {
+        "api-key": API_KEY_CMS
+    }
+    var { noreff, bpr_id } = req.body
+    printreq(req.body, "inquiry");
+    response = await callAPI(CMS_URL, "inquiry", req.body, header)
+    printres(response, "inquiry");
+    var log = {
+        request: req.body,
+        response
+    }
+    if (typeof noreff === 'undefined') {
+        noreff = ''
+    }
+
+    if (typeof bpr_id === 'undefined') {
+        bpr_id = ''
+    }
+
+    insertLog(log, noreff, bpr_id)
+    res.status(200).send(response);
+});
+
 module.exports = router
