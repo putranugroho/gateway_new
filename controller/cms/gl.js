@@ -39,9 +39,9 @@ router.post('/mtcode', validateApiKey, async (req, res) => {
         "api-key": API_KEY_CMS
     }
     var { noreff, bpr_id } = req.body
-    printreq(req.body, "mtcode");
+    printreq(req.body, "List Master Tcode");
     response = await callAPI(CMS_URL, "rekmtd/mtcode", req.body, header)
-    printres(response, "mtcode");
+    printres(response, "List Master Tcode");
     var log = {
         request: req.body,
         response

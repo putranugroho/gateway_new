@@ -13,9 +13,9 @@ router.post('/', validateApiKey, async (req, res) => {
         "x-api-key": API_KEY_COLLME
     }
     var { noreff, bpr_id } = req.body
-    printreq(req.body, "login");
+    printreq(req.body, "INQUIRY REKENING");
     response = await callAPI(URL_COLLME, "inquiry", req.body, header)
-    printres(response, "login");
+    printres(response, "INQUIRY REKENING");
     var log = {
         request: req.body,
         response
