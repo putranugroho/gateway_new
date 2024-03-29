@@ -81,4 +81,12 @@ router.post('/del', validateApiKey, async (req, res) => {
     res.status(200).send(response);
 });
 
+
+router.post('/validasi', validateApiKey, async (req, res) => {
+    printreq(req.body, "VALIDASI USERID")
+    response = await callAPI(URL_COLLME, 'userid/validasi', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
+    printres(response, "VALIDASI USERID")
+    res.status(200).send(response);
+});
+
 module.exports = router
