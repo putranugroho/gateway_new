@@ -1332,10 +1332,10 @@ const transfer = async (req, res) => {
                                 trans_fee,
                                 bank_tujuan,
                                 trx_code,
-                                get_nosbb[0].nosbb_db,
-                                get_nosbb[0].nosbb_db,
-                                get_nosbb[0].nmsbb_db,
-                                get_nosbb[0].nmsbb_db,
+                                nosbb.no_pokok.nosbb_db,
+                                nosbb.no_fee.nosbb_db,
+                                nosbb.no_pokok.nmsbb_db,
+                                nosbb.no_fee.nmsbb_db,
                                 detail_trans
                             )
                             //--berhasil dapat list product update atau insert ke db --//
@@ -1447,10 +1447,10 @@ const transfer = async (req, res) => {
                                 trans_fee,
                                 bank_tujuan,
                                 trx_code,
-                                get_nosbb[0].nosbb_db,
-                                get_nosbb[0].nosbb_db,
-                                get_nosbb[0].nmsbb_db,
-                                get_nosbb[0].nmsbb_db,
+                                nosbb.no_pokok.nosbb_db,
+                                nosbb.no_fee.nosbb_db,
+                                nosbb.no_pokok.nmsbb_db,
+                                nosbb.no_fee.nmsbb_db,
                                 detail_trans
                             )
                             //--berhasil dapat list product update atau insert ke db --//
