@@ -10,7 +10,7 @@ var response
 
 router.post('/', validateApiKey, async (req, res) => {
     printreq(req.body, "TRANSAKSI")
-    response = await callAPI(URL_COLLME, 'transaksi', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
+    response = await callAPI(URL_COLLME, 'gw', req.body, { 'x-api-key': 'X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=' });
     printres(response, "TRANSAKSI")
     res.status(200).send(response);
 });
