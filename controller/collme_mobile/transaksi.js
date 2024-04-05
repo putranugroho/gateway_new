@@ -24,7 +24,7 @@ async function transaksi(req) {
 
     };
 
-    let response;
+    var response;
 
     if (trxMessages[trx_code]) {
         try {

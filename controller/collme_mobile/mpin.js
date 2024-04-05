@@ -13,7 +13,7 @@ async function aktivasi(req) {
         '019': 'GANTI MPIN KOLEKTOR',
     };
 
-    let response;
+    var response;
 
     if (trxMessages[trx_code]) {
         try {

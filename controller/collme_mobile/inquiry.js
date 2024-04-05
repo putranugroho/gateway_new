@@ -20,7 +20,7 @@ async function inquiry(req) {
         '4700': 'GET SETELMENT KOLEKTOR',
     };
 
-    let response;
+    var response;
 
     if (trxMessages[trx_code]) {
         try {

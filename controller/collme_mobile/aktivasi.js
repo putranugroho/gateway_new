@@ -13,7 +13,7 @@ async function aktivasi(req) {
         '7600': 'AKTIVASI KOLEKTOR',
     };
 
-    let response;
+    var response;
 
     if (trxMessages[trx_code]) {
         try {
