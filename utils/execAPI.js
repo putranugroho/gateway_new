@@ -5,7 +5,7 @@ async function callAPI(url, route, data, headers = {}) {
         const response = await axios({
             method: 'post',
             url: `${url}${route}`,
-            timeout: 50000, // milliseconds
+            timeout: 60000, // milliseconds
             headers: headers, // Corrected 'header' to 'headers'
             data: data
         });
