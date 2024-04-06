@@ -183,7 +183,7 @@ router.post("/byuserid", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
-router.post("/add", validateApiKey, async (req, res) => {
+router.post("/insert", validateApiKey, async (req, res) => {
   let response = {};
   let header = {
     "api-key": API_KEY_CMS,
@@ -208,7 +208,7 @@ router.post("/add", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
-router.post("/chg", validateApiKey, async (req, res) => {
+router.post("/update", validateApiKey, async (req, res) => {
   let response = {};
   let header = {
     "api-key": API_KEY_CMS,
@@ -233,7 +233,7 @@ router.post("/chg", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
-router.post("/del", validateApiKey, async (req, res) => {
+router.post("/delete", validateApiKey, async (req, res) => {
   let response = {};
   let header = {
     "api-key": API_KEY_CMS,
