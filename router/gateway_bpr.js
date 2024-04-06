@@ -1,12 +1,13 @@
 const express = require("express");
 const {
-    inquiry_account,
-    transfer,
-    withdrawal,
-    ppob,
-    sign_in_off,
-    list_log_gateway,
-    list_log_core } = require("../controller/gateway_bpr_new");
+  inquiry_account,
+  transfer,
+  withdrawal,
+  ppob,
+  sign_in_off,
+  list_log_gateway,
+  list_log_core,
+} = require("../controller/gateway_bpr_new");
 
 const router = express.Router();
 
