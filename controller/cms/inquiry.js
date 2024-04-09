@@ -35,9 +35,9 @@ router.post("/validatenohp", validateApiKey, async (req, res) => {
   let header = {
     "api-key": API_KEY_CMS,
   };
-  printreq(req.body, "VALIDATE NOREK");
+  printreq(req.body, "VALIDATE NOREK BY NO HP");
   response = await callAPI(CMS_URL, "gw/inq/validatenohp", req.body, header);
-  printres(response, "VALIDATE NOREK");
+  printres(response, "VALIDATE NOREK BY NO HP");
   res.status(200).send(response);
 });
 
