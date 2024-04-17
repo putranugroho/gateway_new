@@ -2,6 +2,7 @@ const express = require("express");
 const { validateApiKey } = require("../../utils/validateApiKey");
 const { printreq, printres } = require("../../utils/getprint");
 const { insertLog } = require("./insertlogcms");
+const { callAPI } = require("../../utils/execAPI");
 const router = express.Router();
 
 module.exports = router;
