@@ -805,6 +805,24 @@ const inquiry_account = async (req, res) => {
                     }
                 }
             }
+        } else if (trx_code == "1000") {
+            console.log("REQ VALIDATE NO_HP NEW");
+            let data_cms = { bpr_id, no_hp }
+            let request_acct = await connect_axios(url_cms, 'CMS', 'gw/inq/validatenohp', data_cms)
+            if (request_acct.code !== "000" && request_acct.data === null) {
+                console.log(request_acct);
+                res.status(200).send(request_acct);
+            } else {
+                let res_send = {
+                    code: "000",
+                    status: "ok",
+                    message: "Success",
+                    rrn: rrn,
+                    data: request_acct.data,
+                }
+                console.log(res_send);
+                res.status(200).send(res_send);
+            }
         }
     } catch (error) {
         //--error server--//
