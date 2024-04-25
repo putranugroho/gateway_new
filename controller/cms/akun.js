@@ -5,6 +5,7 @@ const { printreq, printres } = require("../../utils/getprint");
 const { callAPI } = require("../../utils/execAPI");
 const Validator = require("fastest-validator");
 const { insertLog } = require("./insertlogcms");
+const { route } = require("./inquiry");
 const v = new Validator();
 const { CMS_URL, API_KEY_CMS } = process.env;
 
@@ -337,4 +338,27 @@ router.post("/printakunbyname", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/caribyhp", validateApiKey, async (req, res) => {
+  let response = {};
+  let header = {
+    "api-key": API_KEY_CMS,
+  };
+  printreq(req.body, "CARI AKUN BY NOMOR HP");
+  response = await callAPI(CMS_URL, "akun/byhp", req.body, header);
+  printres(response, "CARI AKUN BY NOMOR HP");
+  var log = {
+    request: req.body,
+    response,
+  };
+  if (typeof noreff === "undefined") {
+    noreff = "";
+  }
+
+  if (typeof bpr_id === "undefined") {
+    bpr_id = "";
+  }
+
+  insertLog(log, noreff, bpr_id);
+  res.status(200).send(response);
+});
 module.exports = router;
