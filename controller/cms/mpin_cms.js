@@ -149,4 +149,15 @@ router.post("/updatempincetak", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/gantimpin", validateApiKey, async (req, res) => {
+  let response = {};
+  let header = {
+    "api-key": API_KEY_CMS,
+  };
+  printreq(req.body, "GANTI MPIN");
+  response = await callAPI(CMS_URL, "mpin/gantimpin", req.body, header);
+  printres(response, "GANTI MPIN");
+  res.status(200).send(response);
+});
+
 module.exports = router;
