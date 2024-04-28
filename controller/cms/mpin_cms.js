@@ -154,6 +154,7 @@ router.post("/gantimpin", validateApiKey, async (req, res) => {
   let header = {
     "api-key": API_KEY_CMS,
   };
+  console.log("masuk");
   printreq(req.body, "GANTI MPIN");
   response = await callAPI(CMS_URL, "mpin/gantimpin", req.body, header);
   printres(response, "GANTI MPIN");
