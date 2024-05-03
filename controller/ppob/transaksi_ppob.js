@@ -209,7 +209,7 @@ async function transaksi_ppob(req) {
             }
 
             let nosbb = await split_sbb(responseApi.data, trx_code);
-            console.log(nosbb);
+
             let data_core;
             if (trx_type === "TRX") {
               data_core = {
