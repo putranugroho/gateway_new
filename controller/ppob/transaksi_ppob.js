@@ -45,6 +45,24 @@ async function transaksi_ppob(req) {
     no_rek: norek,
   };
   try {
+    sqlquery = `select * from status_core`;
+    const [result, metadata] = await db.sequelize.query(sqlquery);
+    if (metadata.rowCount > 0) {
+      if (result[0].status == "0") {
+        return {
+          code: "089",
+          status: "gagal",
+          message: "core banking sedang offline",
+        };
+      }
+    } else {
+      return {
+        code: "099",
+        status: "gagal",
+        message: "status core tidak ada",
+      };
+    }
+
     responseApi = await callAPI(
       CMS_URL,
       "gw/inq/validatenorekhp",
