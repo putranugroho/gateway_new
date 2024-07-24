@@ -12,6 +12,7 @@ const mpinRouter = require("./cis_router/mpinRouter");
 const transglRouter = require("./cis_router/transglRouter");
 const cardRouter = require("./cis_router/cardRouter");
 const transaksiRouter = require("./cis_router/transaksiRouter");
+const reportrouter = require("./cis_router/reportRouter");
 
 router.use("/userid", useridRouter);
 router.use("/inquiry", inquiryRouter);
@@ -22,7 +23,7 @@ router.use("/mpin", mpinRouter);
 router.use("/transgl", transglRouter);
 router.use("/card", cardRouter);
 router.use("/transaksi", transaksiRouter);
-
+router.use("/report", reportrouter);
 router.post("/", validateApiKey, async (req, res) => {
   res.status(200).send("API CIS");
 });
