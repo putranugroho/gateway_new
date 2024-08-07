@@ -22,7 +22,7 @@ async function transaksi(req) {
     "024": "GET TRANSAKSI PENDING VIA TELLER",
     "025": "POSTING TRANSAKSI PENDING VIA TELLER",
     1300: "TRANSAKSI TARIK TUNAI  VIA TELLER",
-    4700: "TRANSAKSI SETOR TUNAI VIA TELLER",
+    4600: "TRANSAKSI SETOR TUNAI VIA TELLER",
   };
 
   var response;
@@ -45,7 +45,7 @@ async function transaksi(req) {
     const timestampString = convertmicrotime(microtimeValue);
 
     printreq(req, trxMessages[trx_code]);
-    printres(req, trxMessages[trx_code]);
+    printres(response, trxMessages[trx_code]);
 
     const datalog = { Request: req, Response: response };
     insertlog(
