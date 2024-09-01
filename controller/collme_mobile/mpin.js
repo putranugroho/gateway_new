@@ -33,7 +33,6 @@ async function aktivasi(req) {
     const timestampString = convertmicrotime(microtimeValue);
 
     printreq(req, trxMessages[trx_code]);
-    printres(req, trxMessages[trx_code]);
 
     const datalog = { Request: req, Response: response };
     insertlog(nohp, bpr_id, timestampString, noreff, JSON.stringify(datalog));
@@ -46,6 +45,7 @@ async function aktivasi(req) {
     };
   }
 
+  printres(response, trxMessages[trx_code]);
   return response;
 }
 

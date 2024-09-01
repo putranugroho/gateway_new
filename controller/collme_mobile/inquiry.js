@@ -40,7 +40,6 @@ async function inquiry(req) {
     const timestampString = convertmicrotime(microtimeValue);
 
     printreq(req, trxMessages[trx_code]);
-    printres(req, trxMessages[trx_code]);
     var nohp;
     const datalog = { Request: req, Response: response };
     if (typeof nohp == "undefined") {
@@ -56,6 +55,7 @@ async function inquiry(req) {
     };
   }
 
+  printres(response, trxMessages[trx_code]);
   return response;
 }
 

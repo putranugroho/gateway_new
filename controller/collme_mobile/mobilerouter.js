@@ -10,10 +10,12 @@ router.post("/transaksi", validateApiKey, async (req, res) => {
   response = await transaksi(req.body);
   res.status(200).send(response);
 });
+
 router.post("/aktivasi", validateApiKey, async (req, res) => {
   response = await aktivasi(req.body);
   res.status(200).send(response);
 });
+
 router.post("/inquiry", validateApiKey, async (req, res) => {
   response = await inquiry(req.body);
   res.status(200).send(response);

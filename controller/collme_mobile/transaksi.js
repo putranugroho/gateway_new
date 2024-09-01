@@ -45,7 +45,6 @@ async function transaksi(req) {
     const timestampString = convertmicrotime(microtimeValue);
 
     printreq(req, trxMessages[trx_code]);
-    printres(response, trxMessages[trx_code]);
 
     const datalog = { Request: req, Response: response };
     insertlog(
@@ -64,6 +63,7 @@ async function transaksi(req) {
     };
   }
 
+  printres(response, trxMessages[trx_code]);
   return response;
 }
 
