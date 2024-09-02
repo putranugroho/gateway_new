@@ -89,6 +89,15 @@ router.post("/chg", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/chgpass", validateApiKey, async (req, res) => {
+  printreq(req.body, "UPDATE USERID");
+  response = await callAPI(URL_COLLME, "userid/chgpass", req.body, {
+    "x-api-key": "X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=",
+  });
+  printres(response, "UPDATE USERID");
+  res.status(200).send(response);
+});
+
 router.post("/del", validateApiKey, async (req, res) => {
   printreq(req.body, "DELETE USERID");
   response = await callAPI(URL_COLLME, "userid/del", req.body, {
