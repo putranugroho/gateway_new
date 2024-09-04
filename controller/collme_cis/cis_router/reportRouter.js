@@ -21,4 +21,14 @@ router.post("/periode", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/", validateApiKey, async (req, res) => {
+  printreq(req.body, "REPORT TRANSAKSI COLL ");
+
+  response = await callAPI(URL_COLLME, "report", req.body, {
+    "x-api-key": "X0pQMBDSo2DAarIgOQrbm/N/UySKrbPeo3QbnZkKD7M=",
+  });
+  printres(response, "REPORT TRANSAKSI COLL ");
+  res.status(200).send(response);
+});
+
 module.exports = router;
