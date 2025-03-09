@@ -978,6 +978,7 @@ const transfer = async (req, res) => {
                                         remark: "saldo keeping",
                                         beneficiary_email: "nugrohopnn@gmail.com",
                                         recipient_city: "391",
+                                        rrn,
                                         xusername,
                                         xpassword
                                     };
