@@ -122,4 +122,16 @@ router.post("/rek", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/transaksi", validateApiKey, async (req, res) => {
+  let response = {};
+  let header = {
+    "api-key": API_KEY_CMS,
+  };
+
+  printreq(req.body, "CEK STATUS CORE");
+  response = await callAPI(CMS_URL, "gw/inq/transaksi", req.body, header);
+  printres(response, "CEK STATUS CORE");
+  res.status(200).send(response);
+});
+
 module.exports = router;
