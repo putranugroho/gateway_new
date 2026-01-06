@@ -134,4 +134,16 @@ router.post("/transaksi", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post("/masterdata", validateApiKey, async (req, res) => {
+  let response = {};
+  let header = {
+    "api-key": API_KEY_CMS,
+  };
+
+  printreq(req.body, "CEK CEK MASTER DATA");
+  response = await callAPI(CMS_URL, "inquiry/masterdata", req.body, header);
+  printres(response, "CEK CEK MASTER DATA");
+  res.status(200).send(response);
+});
+
 module.exports = router;
