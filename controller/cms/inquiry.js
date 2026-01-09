@@ -140,10 +140,26 @@ router.post("/masterdata", validateApiKey, async (req, res) => {
     "api-key": API_KEY_CMS,
   };
 
-  printreq(req.body, "CEK CEK MASTER DATA");
+  printreq(req.body, "CEK MASTER DATA");
   response = await callAPI(CMS_URL, "inquiry/masterdata", req.body, header);
-  printres(response, "CEK CEK MASTER DATA");
+  printres(response, "CEK MASTER DATA");
   res.status(200).send(response);
 });
 
+router.post("/masterdata/mutasi-tabungan", validateApiKey, async (req, res) => {
+  let response = {};
+  let header = {
+    "api-key": API_KEY_CMS,
+  };
+
+  printreq(req.body, "CEK MUTASI TABUNGAN");
+  response = await callAPI(
+    CMS_URL,
+    "inquiry/masterdata/mutasi-tabungan",
+    req.body,
+    header
+  );
+  printres(response, "CEK MUTASI TABUNGAN");
+  res.status(200).send(response);
+});
 module.exports = router;
