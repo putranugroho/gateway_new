@@ -197,4 +197,45 @@ router.post("/masterdata/tagihan-loan", validateApiKey, async (req, res) => {
   res.status(200).send(response);
 });
 
+router.post(
+  "/masterdata/list-produk-tabungan",
+  validateApiKey,
+  async (req, res) => {
+    let response = {};
+    let header = {
+      "api-key": API_KEY_CMS,
+    };
+
+    printreq(req.body, "CEK LIST PRODUK TABUNGAN");
+    response = await callAPI(
+      CMS_URL,
+      "inquiry/masterdata/list-produk-tabungan",
+      req.body,
+      header
+    );
+    printres(response, "CEK LIST PRODUK TABUNGAN");
+    res.status(200).send(response);
+  }
+);
+
+router.post(
+  "/masterdata/list-produk-deposito",
+  validateApiKey,
+  async (req, res) => {
+    let response = {};
+    let header = {
+      "api-key": API_KEY_CMS,
+    };
+
+    printreq(req.body, "CEK LIST PRODUK DEPOSITO");
+    response = await callAPI(
+      CMS_URL,
+      "inquiry/masterdata/list-produk-deposito",
+      req.body,
+      header
+    );
+    printres(response, "CEK LIST PRODUK DEPOSITO");
+    res.status(200).send(response);
+  }
+);
 module.exports = router;
