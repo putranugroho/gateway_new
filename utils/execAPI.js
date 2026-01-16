@@ -6,7 +6,7 @@ async function callAPI(url, route, data, headers = {}) {
       method: "post",
       url: `${url}${route}`,
       timeout: 60000, // milliseconds
-      headers: headers, // Corrected 'header' to 'headers'
+      headers: headers,
       data: data,
     });
 
@@ -14,20 +14,32 @@ async function callAPI(url, route, data, headers = {}) {
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.code === "ECONNABORTED") {
+        // Timeout
         return {
           code: "088",
-          status: "ECONNABORTED",
-          message: "Connection Timeout",
+          status: "Failed",
+          message: "timeout",
+        };
+      } else if (
+        error.code === "ENOTFOUND" ||
+        error.code === "ECONNREFUSED" ||
+        error.code === "EAI_AGAIN"
+      ) {
+        // API Tidak aktif/tidak connect/tidak bisa resolve hostname
+        return {
+          code: "098",
+          status: "Failed",
+          message: "API tidak aktif",
         };
       } else {
         return {
-          code: "099", // Adjust the error code as needed
+          code: "099",
           status: "Failed",
           message: error.message,
         };
       }
     } else {
-      throw error; // Re-throw non-Axios errors
+      throw error;
     }
   }
 }
