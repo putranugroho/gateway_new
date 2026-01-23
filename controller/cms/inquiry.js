@@ -238,4 +238,26 @@ router.post(
     res.status(200).send(response);
   }
 );
+
+
+router.post(
+  "/masterdata/rate-produk",
+  validateApiKey,
+  async (req, res) => {
+    let response = {};
+    let header = {
+      "api-key": API_KEY_CMS,
+    };
+
+    printreq(req.body, "CEK RATE PRODUK");
+    response = await callAPI(
+      CMS_URL,
+      "inquiry/masterdata/rate-produk",
+      req.body,
+      header
+    );
+    printres(response, "CEK RATE PRODUK");
+    res.status(200).send(response);
+  }
+);
 module.exports = router;
