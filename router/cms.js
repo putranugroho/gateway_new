@@ -12,6 +12,7 @@ const acctyperouter = require("../controller/cms/accttype");
 const inquiryrouter = require("../controller/cms/inquiry");
 const glrouter = require("../controller/cms/gl");
 const aktivasirouter = require("../controller/cms/aktivasi");
+const setuprouter = require("../controller/cms/setup");
 
 router.use("/userid", useridrouter);
 router.use("/mpin", mpinrouter);
@@ -21,5 +22,6 @@ router.use("/acctype", acctyperouter);
 router.use("/inquiry", inquiryrouter);
 router.use("/gl", glrouter);
 router.use("/aktivasi", aktivasirouter);
+router.use("/setup", setuprouter);
 
 module.exports = router;
